@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.ucsccaa.homepagebe.domains.Article;
 import org.ucsccaa.homepagebe.models.ServiceResponse;
@@ -69,18 +70,12 @@ public class ArticleController {
         return new ServiceResponse<>(article);
     }
 
-    @ApiOperation("Get all Articles")
+    @ApiOperation("Get Articles by Category and Page")
     @GetMapping
-    public ServiceResponse<List<Article>> getAll() {
-        return new ServiceResponse<>(service.getAll());
-    }
-
-    @ApiOperation("Get articles by category")
-    @GetMapping("/_category")
-    public ServiceResponse<List<Article>> getArticleByCategory(@RequestBody Article article) {
+    public ServiceResponse<List<Article>> getArticleByCategory(@RequestParam String category, @RequestParam Integer page) {
         List<Article> list;
         try {
-            list = service.getArticleByCategory(article.getCategory());
+            list = service.getArticleByCategory(category, page);
         } catch (Exception e) {
             return new ServiceResponse<>(Status.ERROR, e.getMessage());
         }

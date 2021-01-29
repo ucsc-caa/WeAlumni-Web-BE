@@ -1,7 +1,6 @@
 package org.ucsccaa.homepagebe.services;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,10 +37,25 @@ public class ArticleService {
         return repository.findAll();
     }
 
-    public List<Article> getArticleByCategory(String category) {
+    public List<Article> getArticleByCategory(String category, Integer page) {
         if (category == null)
             throw new RuntimeException("CATEGORY CANNOT BE NULL");
-        return repository.findByCategory(category);
+        if (page == null) 
+            throw new RuntimeException("PAGE NUMBER CANNOT BE NULL");
+        if (page < 0) 
+            throw new RuntimeException("INVALID PAGE NUMBER");
+        if (page == 0) {
+            Optional<Article> article = repository.findFirstByCategoryOrderByPosttimeDesc(category);
+            if (!article.isPresent()) 
+                return new ArrayList<Article>();
+            else 
+                return new ArrayList<Article>(){{ add(article.get()); }};
+        }
+        List<Article> result = repository.findByCategoryOrderByPosttimeAsc(category);
+        int fromIndex = (page-1) * 15, toIndex = page * 15;
+        if (fromIndex > result.size())
+            return new ArrayList<Article>();
+        return result.subList(fromIndex, toIndex > result.size() ? result.size() : toIndex);
     }
 
     public Boolean deleteArticleById(Long id) {

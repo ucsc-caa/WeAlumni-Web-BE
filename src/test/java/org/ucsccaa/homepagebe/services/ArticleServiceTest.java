@@ -76,11 +76,24 @@ public class ArticleServiceTest {
     }
 
     @Test
-    public void getArticleByCategoryTest() {
+    public void getArticleByCategoryPageOneTest() {
         List<Article> expectedList = new ArrayList<Article>(){{add(expectedArticle);}};
-        when(repository.findByCategory(anyString())).thenReturn(expectedList);
-        List<Article> list = service.getArticleByCategory(expectedArticle.getCategory());
+        when(repository.findByCategoryOrderByPosttimeAsc(anyString())).thenReturn(expectedList);
+        List<Article> list = service.getArticleByCategory(expectedArticle.getCategory(), 1);
         assertEquals(expectedList, list);
+    }
+
+    @Test
+    public void getArticleByCategoryPageZeroTest() {
+        List<Article> expectedList = new ArrayList<Article>(){{add(expectedArticle);}};
+        when(repository.findFirstByCategoryOrderByPosttimeDesc(anyString())).thenReturn(Optional.of(expectedArticle));
+        List<Article> list = service.getArticleByCategory(expectedArticle.getCategory(), 0);
+        assertEquals(expectedList, list);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void getArticleByCategoryPageInvalidTest() {
+        service.getArticleByCategory(expectedArticle.getCategory(), -1);
     }
 
     @Test
