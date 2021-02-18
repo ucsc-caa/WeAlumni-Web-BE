@@ -11,10 +11,13 @@ import org.ucsccaa.homepagebe.repositories.UserRepository;
 public class UserService {
     @Autowired
     private UserRepository repository;
-
+    @Autowired
+    private AuthenticationService authenticationService;
     public Long addUser(User user) {
         if (user == null)
             throw new RuntimeException("USER CANNOT BE NULL");
+        user.setSalt(authenticationService.getSalt());
+        user.setPassword(authenticationService.encrypt(user.getPassword(),user.getSalt()));
         return repository.save(user).getId();
     }
 

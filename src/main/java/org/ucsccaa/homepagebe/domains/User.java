@@ -20,5 +20,6 @@ public class User {
     private String name;
     private String password;
     private String email;
-    private String auth;
+    private byte[] salt;
+    // private String auth; // still needed?
 }
