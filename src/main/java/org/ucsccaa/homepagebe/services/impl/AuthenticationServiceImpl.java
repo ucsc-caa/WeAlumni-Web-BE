@@ -74,18 +74,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .signWith(SignatureAlgorithm.HS512, secretKey)
                 .compact();
     }
+
     @Override
     public Optional<User> authenticate(String email, String password) {
-        if(email == null || password == null) {
+        if (email == null || password == null) {
             throw new RuntimeException("argument cannot be null");
         }
         Optional<User> user = userRepository.findByEmail(email);
-        if(!user.isPresent()){
+        if (!user.isPresent()) {
             return Optional.empty();
         }
         byte[] salt = user.get().getSalt();
         String loginPassword = encrypt(password, salt);
-        if(!loginPassword.equals(user.get().getPassword()) ) {
+        if (!loginPassword.equals(user.get().getPassword())) {
             return Optional.empty();
         }
         return user;

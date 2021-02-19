@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebFilter(filterName = "AuthenticationFilter", urlPatterns = {"/articles/*","/users/*"})
+@WebFilter(filterName = "AuthenticationFilter", urlPatterns = {"/articles/*", "/users/*"})
 
 public class AuthenticationFilter implements Filter {
     @Autowired
@@ -21,16 +21,14 @@ public class AuthenticationFilter implements Filter {
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         String method = httpServletRequest.getMethod();
         String uri = httpServletRequest.getRequestURI();
-        if ("POST".equals(method)&&uri.contains("users")) {
+        if ("POST".equals(method) && uri.contains("users")) {
             chain.doFilter(httpServletRequest, httpServletResponse);
-        }
-        else {
-            String token =  httpServletRequest.getHeader("authorization").substring(6);
-            if (authenticationService.validateToken(token)){
-                chain.doFilter(httpServletRequest,httpServletResponse);
-            }
-            else {
-                httpServletResponse.sendError(500,"INVALID TOKEN");
+        } else {
+            String token = httpServletRequest.getHeader("authorization").substring(6);
+            if (authenticationService.validateToken(token)) {
+                chain.doFilter(httpServletRequest, httpServletResponse);
+            } else {
+                httpServletResponse.sendError(500, "INVALID TOKEN");
             }
         }
 
