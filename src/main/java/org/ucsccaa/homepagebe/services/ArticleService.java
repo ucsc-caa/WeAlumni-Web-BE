@@ -51,7 +51,7 @@ public class ArticleService {
             else 
                 return new ArrayList<Article>(){{ add(article.get()); }};
         }
-        List<Article> result = repository.findByCategoryOrderByPosttimeAsc(category);
+        List<Article> result = repository.findByCategoryOrderByPosttimeDesc(category);
         int fromIndex = (page-1) * 15, toIndex = page * 15;
         if (fromIndex > result.size())
             return new ArrayList<Article>();

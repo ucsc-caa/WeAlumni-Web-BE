@@ -52,8 +52,8 @@ public class ArticleServiceTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void updateArticleIdNullTest() {
-        service.updateArticle(new Article());
+    public void updateArticleNullTest() {
+        service.updateArticle(null);
     }
 
     @Test
@@ -61,6 +61,13 @@ public class ArticleServiceTest {
         when(repository.existsById(anyLong())).thenReturn(false);
         Article article = service.updateArticle(expectedArticle);
         assertEquals(null, article);
+    }
+
+    @Test
+    public void getAllTest() {
+        when(repository.findAll()).thenReturn(new ArrayList<>());
+        List<Article> list = service.getAll();
+        assertEquals(new ArrayList<>(), list);
     }
 
     @Test
@@ -78,7 +85,7 @@ public class ArticleServiceTest {
     @Test
     public void getArticleByCategoryPageOneTest() {
         List<Article> expectedList = new ArrayList<Article>(){{add(expectedArticle);}};
-        when(repository.findByCategoryOrderByPosttimeAsc(anyString())).thenReturn(expectedList);
+        when(repository.findByCategoryOrderByPosttimeDesc(anyString())).thenReturn(expectedList);
         List<Article> list = service.getArticleByCategory(expectedArticle.getCategory(), 1);
         assertEquals(expectedList, list);
     }
@@ -89,6 +96,16 @@ public class ArticleServiceTest {
         when(repository.findFirstByCategoryOrderByPosttimeDesc(anyString())).thenReturn(Optional.of(expectedArticle));
         List<Article> list = service.getArticleByCategory(expectedArticle.getCategory(), 0);
         assertEquals(expectedList, list);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void getArticleByCategoryNullCategoryTest() {
+        service.getArticleByCategory(null, null);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void getArticleByCategoryNullPageTest() {
+        service.getArticleByCategory("fun", null);
     }
 
     @Test(expected = RuntimeException.class)
@@ -108,6 +125,11 @@ public class ArticleServiceTest {
         when(repository.findById(anyLong())).thenReturn(Optional.empty());
         boolean result = service.deleteArticleById((long)1);
         assertEquals(false, result);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void deleteArticleByIdNullTest() {
+        service.deleteArticleById(null);
     }
 
     

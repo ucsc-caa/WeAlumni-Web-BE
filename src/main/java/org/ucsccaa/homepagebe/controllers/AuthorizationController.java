@@ -2,10 +2,7 @@ package org.ucsccaa.homepagebe.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.ucsccaa.homepagebe.domains.User;
 import org.ucsccaa.homepagebe.models.ServiceResponse;
 import org.ucsccaa.homepagebe.models.Status;
@@ -15,16 +12,13 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthorizationController {
     @Autowired
     private AuthenticationService authenticationService;
 
-    @PostMapping("login")
-    public ServiceResponse<String> login(@RequestBody Map<String, Object> params) {
-        String email = (String) params.get("email");
-        String password = (String) params.get("password");
-        Optional<User> result = authenticationService.authenticate(email, password);
+    @PostMapping("authenticate")
+    public ServiceResponse<String> login(@RequestParam String username, @RequestParam String password) {
+        Optional<User> result = authenticationService.authenticate(username, password);
         if (!result.isPresent()) {
             return new ServiceResponse<>(Status.NOT_FOUND, "User not found");
         }
