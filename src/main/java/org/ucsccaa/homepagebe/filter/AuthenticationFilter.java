@@ -28,7 +28,7 @@ public class AuthenticationFilter implements Filter {
             if (authenticationService.validateToken(token)) {
                 chain.doFilter(httpServletRequest, httpServletResponse);
             } else {
-                httpServletResponse.sendError(500, "INVALID TOKEN");
+                httpServletResponse.sendError(401, "INVALID TOKEN");
             }
         }
 
