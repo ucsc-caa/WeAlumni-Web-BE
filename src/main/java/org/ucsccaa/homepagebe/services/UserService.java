@@ -35,4 +35,13 @@ public class UserService {
         Optional<User> user = repository.findById(id);
         return user.isPresent() ? user.get() : null;
     }
+
+    public User getCensoredUserById(Long id) {
+        User oUser = getUserById(id);
+        User user = new User();
+        user.setId(oUser.getId());
+        user.setName(oUser.getName());
+        user.setEmail(oUser.getEmail());
+        return user;
+    }
 }

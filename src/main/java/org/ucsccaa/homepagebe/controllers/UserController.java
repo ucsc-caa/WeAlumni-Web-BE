@@ -58,7 +58,7 @@ public class UserController {
     public ServiceResponse<User> getUserById(@PathVariable Long id) {
         User user = null;
         try {
-            user = service.getUserById(id);
+            user = service.getCensoredUserById(id);
             if (user == null)
                 return new ServiceResponse<>(Status.NOT_FOUND, "ID NOT FOUND");
         } catch (Exception e) {
