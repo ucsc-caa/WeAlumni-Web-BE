@@ -24,14 +24,16 @@ public class AuthenticationFilter implements Filter {
         if ("POST".equals(method) && uri.contains("users") || "GET".equals(method) && uri.contains("articles")) {
             chain.doFilter(httpServletRequest, httpServletResponse);
         } else {
-            String token = httpServletRequest.getHeader("authorization").substring(6);
-            if (authenticationService.validateToken(token)) {
-                chain.doFilter(httpServletRequest, httpServletResponse);
-            } else {
-                httpServletResponse.sendError(401, "INVALID TOKEN");
+            try {
+                String token = httpServletRequest.getHeader("authorization").substring(6);
+                if (authenticationService.validateToken(token)) {
+                    chain.doFilter(httpServletRequest, httpServletResponse);
+                } else {
+                    httpServletResponse.sendError(401, "INVALID TOKEN");
+                }
+            } catch(Exception e) {
+                httpServletResponse.sendError(401, "TOKEN NOT PROVIDED");
             }
         }
-
-
     }
 }
