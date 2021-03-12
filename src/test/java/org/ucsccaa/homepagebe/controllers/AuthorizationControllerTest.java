@@ -28,7 +28,6 @@ public class AuthorizationControllerTest {
     @InjectMocks
     private UserController controller;
     private final User expectedUser = new User((long)1, "name", "password", "email", null);
-    private final String token = "test_token";
 
     @Test
     public void authenticateSuccessTest() throws Exception {
