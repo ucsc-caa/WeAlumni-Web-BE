@@ -19,8 +19,7 @@ import org.ucsccaa.homepagebe.HomepageBeApplication;
 import org.ucsccaa.homepagebe.domains.User;
 import org.ucsccaa.homepagebe.services.UserService;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -32,7 +31,7 @@ public class UserControllerTest {
     private UserService service;
     @InjectMocks
     private UserController controller;
-    private final User expectedUser = new User((long)1, "name", "password", "email", null);
+    private final User expectedUser = new User((long)1, "name", "password", "@email", null);
     private final String token = "test_token";
 
     @Before
@@ -44,10 +43,11 @@ public class UserControllerTest {
     @Test
     public void addUserTest() throws Exception {
         when(service.addUser(any())).thenReturn(expectedUser.getId());
-        String json = objectMapper.writeValueAsString(expectedUser);
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
+                .param("name", "name")
+                .param("password", "password")
+                .param("email", "@email")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.payload")
                         .value("http://localhost/users/" + expectedUser.getId().toString()));
@@ -56,52 +56,54 @@ public class UserControllerTest {
     @Test
     public void addUserNullTest() throws Exception {
         when(service.addUser(null)).thenThrow(RuntimeException.class);
-        String json = objectMapper.writeValueAsString(null);
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
     public void addUserExceptionTest() throws Exception {
         when(service.addUser(any())).thenThrow(RuntimeException.class);
-        String json = objectMapper.writeValueAsString(expectedUser);
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
+                .param("name", "name")
+                .param("password", "password")
+                .param("email", "@email")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("ERROR"));
     }
 
     @Test
     public void updateUserTest() throws Exception {
-        String json = objectMapper.writeValueAsString(expectedUser);
         when(service.updateUser(any())).thenReturn(expectedUser);
         mockMvc.perform(MockMvcRequestBuilders.put("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
+                .param("id", expectedUser.getId().toString())
+                .param("name", "name")
+                .param("password", "password")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.payload.id").value(expectedUser.getId()));
     }
 
     @Test
     public void updateUserNotFoundTest() throws Exception {
-        String json = objectMapper.writeValueAsString(expectedUser);
         when(service.updateUser(any())).thenReturn(null);
         mockMvc.perform(MockMvcRequestBuilders.put("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
+                .param("id", expectedUser.getId().toString())
+                .param("name", "name")
+                .param("password", "password")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("NOT_FOUND"));
     }
 
     @Test
     public void updateUserExceptionTest() throws Exception {
-        String json = objectMapper.writeValueAsString(expectedUser);
         when(service.updateUser(any())).thenThrow(RuntimeException.class);
         mockMvc.perform(MockMvcRequestBuilders.put("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
+                .param("id", expectedUser.getId().toString())
+                .param("name", "name")
+                .param("password", "password")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("ERROR"));
     }
 

@@ -6,13 +6,7 @@ import java.net.URISyntaxException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.ucsccaa.homepagebe.domains.User;
 import org.ucsccaa.homepagebe.models.ServiceResponse;
 import org.ucsccaa.homepagebe.models.Status;
@@ -30,8 +24,12 @@ public class UserController {
 
     @ApiOperation("Add new User")
     @PostMapping
-    public ServiceResponse<URI> addUser(@RequestBody User user, HttpServletRequest req) throws URISyntaxException {
+    public ServiceResponse<URI> addUser(@RequestParam String email, @RequestParam String name, @RequestParam String password, HttpServletRequest req) throws URISyntaxException {
         try {
+            User user = new User();
+            user.setEmail(email);
+            user.setName(name);
+            user.setPassword(password);
             Long id = service.addUser(user);
             return new ServiceResponse<>(new URI(req.getRequestURL() + "/" + id));
         } catch (Exception e) {
@@ -41,8 +39,12 @@ public class UserController {
 
     @ApiOperation("Update existed User by ID")
     @PutMapping
-    public ServiceResponse<User> updateUser(@RequestBody User user) {
+    public ServiceResponse<User> updateUser(@RequestParam Long id, @RequestParam String name, @RequestParam String password) {
         User updatedUser = null;
+        User user = new User();
+        user.setId(id);
+        user.setName(name);
+        user.setPassword(password);
         try {
             updatedUser = service.updateUser(user);
             if (updatedUser == null)
