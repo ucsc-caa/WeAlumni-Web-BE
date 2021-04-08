@@ -109,7 +109,7 @@ public class UserControllerTest {
 
     @Test
     public void getUserByIdTest() throws Exception {
-        when(service.getUserById(anyLong())).thenReturn(expectedUser);
+        when(service.getCensoredUserById(anyLong())).thenReturn(expectedUser);
         mockMvc.perform(MockMvcRequestBuilders.get("/users/" + expectedUser.getId()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.payload.id").value(expectedUser.getId()));
@@ -117,7 +117,7 @@ public class UserControllerTest {
 
     @Test
     public void getUserByIdNotFoundTest() throws Exception {
-        when(service.getUserById(anyLong())).thenReturn(null);
+        when(service.getCensoredUserById(anyLong())).thenReturn(null);
         mockMvc.perform(MockMvcRequestBuilders.get("/users/1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("NOT_FOUND"));
@@ -125,7 +125,7 @@ public class UserControllerTest {
 
     @Test
     public void getUserByIdExceptionTest() throws Exception {
-        when(service.getUserById(anyLong())).thenThrow(RuntimeException.class);
+        when(service.getCensoredUserById(anyLong())).thenThrow(RuntimeException.class);
         mockMvc.perform(MockMvcRequestBuilders.get("/users/1"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("ERROR"));
     }
