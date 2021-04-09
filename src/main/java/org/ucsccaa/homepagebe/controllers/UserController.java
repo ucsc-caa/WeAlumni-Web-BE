@@ -23,7 +23,7 @@ public class UserController {
     private UserService service;
 
     @ApiOperation("Add new User")
-    @PostMapping
+    @PostMapping("/register")
     public ServiceResponse<URI> addUser(@RequestParam String email, @RequestParam String name, @RequestParam String password, HttpServletRequest req) throws URISyntaxException {
         try {
             User user = new User();
