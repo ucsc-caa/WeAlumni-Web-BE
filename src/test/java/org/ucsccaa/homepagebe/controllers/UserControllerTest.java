@@ -43,20 +43,20 @@ public class UserControllerTest {
     @Test
     public void addUserTest() throws Exception {
         when(service.addUser(any())).thenReturn(expectedUser.getId());
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/register")
                 .param("name", "name")
                 .param("password", "password")
                 .param("email", "@email")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.payload")
-                        .value("http://localhost/users/" + expectedUser.getId().toString()));
+                        .value("http://localhost/users/register/" + expectedUser.getId().toString()));
     }
 
     @Test
     public void addUserNullTest() throws Exception {
         when(service.addUser(null)).thenThrow(RuntimeException.class);
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/register")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
@@ -64,7 +64,7 @@ public class UserControllerTest {
     @Test
     public void addUserExceptionTest() throws Exception {
         when(service.addUser(any())).thenThrow(RuntimeException.class);
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/register")
                 .param("name", "name")
                 .param("password", "password")
                 .param("email", "@email")
