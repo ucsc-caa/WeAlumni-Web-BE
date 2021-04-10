@@ -25,7 +25,7 @@ public class Article {
     private String author;
     private String content;
     @Column(insertable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
-    private LocalDateTime posttime; 
+    private LocalDateTime timestamp;
     private String img;
     private String html;
 }

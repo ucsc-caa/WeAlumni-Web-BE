@@ -3,6 +3,8 @@ package org.ucsccaa.homepagebe.services;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.ucsccaa.homepagebe.domains.Article;
 import org.ucsccaa.homepagebe.repositories.ArticleRepository;
@@ -45,17 +47,13 @@ public class ArticleService {
         if (page < 0) 
             throw new RuntimeException("INVALID PAGE NUMBER");
         if (page == 0) {
-            Optional<Article> article = repository.findFirstByCategoryOrderByPosttimeDesc(category);
+            Optional<Article> article = repository.findFirstByCategoryOrderByTimestampDesc(category);
             if (!article.isPresent()) 
                 return new ArrayList<Article>();
             else 
                 return new ArrayList<Article>(){{ add(article.get()); }};
         }
-        List<Article> result = repository.findByCategoryOrderByPosttimeDesc(category);
-        int fromIndex = (page-1) * 15, toIndex = page * 15;
-        if (fromIndex > result.size())
-            return new ArrayList<Article>();
-        return result.subList(fromIndex, toIndex > result.size() ? result.size() : toIndex);
+        return repository.findByCategory(category, PageRequest.of(page-1, 15, Sort.by(Sort.Direction.DESC, "timestamp"))).getContent();
     }
 
     public Boolean deleteArticleById(Long id) {

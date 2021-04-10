@@ -16,6 +16,9 @@ public class UserService {
     public Long addUser(User user) {
         if (user == null)
             throw new RuntimeException("USER CANNOT BE NULL");
+        if (repository.existsByUsername(user.getUsername())) {
+            throw new RuntimeException("USERNAME ALREADY EXISTS");
+        }
         user.setSalt(authenticationService.getSalt());
         user.setPassword(authenticationService.encrypt(user.getPassword(),user.getSalt()));
         return repository.save(user).getId();
@@ -41,7 +44,7 @@ public class UserService {
         User user = new User();
         user.setId(oUser.getId());
         user.setName(oUser.getName());
-        user.setEmail(oUser.getEmail());
+        user.setUsername(oUser.getUsername());
         return user;
     }
 }

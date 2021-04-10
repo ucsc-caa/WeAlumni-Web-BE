@@ -19,7 +19,7 @@ public class User {
     private Long id;
     private String name;
     private String password;
-    private String email;
+    private String username;
     private byte[] salt;
     // private String auth; // still needed?
 }

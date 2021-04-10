@@ -29,6 +29,7 @@ public class UserServiceTest {
     @Test
     public void addUserTest() {
         when(repository.save(any())).thenReturn(expectedUser);
+        when(repository.existsByUsername(any())).thenReturn(false);
         when(authenticationService.getSalt()).thenReturn(null);
         when(authenticationService.encrypt(any(),any())).thenReturn(null);
         Long id = userService.addUser(expectedUser);
@@ -38,6 +39,12 @@ public class UserServiceTest {
     @Test(expected = RuntimeException.class)
     public void addUserNullTest() {
         userService.addUser(null);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void addUserExistsTest() {
+        when(repository.existsByUsername(any())).thenReturn(true);
+        userService.addUser(expectedUser);
     }
 
     @Test
@@ -68,5 +75,14 @@ public class UserServiceTest {
     @Test(expected = RuntimeException.class)
     public void getUserIdNullTest() {
         userService.getUserById(null);
+    }
+
+    @Test
+    public void getCensoredUserByIdTest() {
+        when(repository.findById(anyLong())).thenReturn(Optional.of(expectedUser));
+        User user = userService.getCensoredUserById(expectedUser.getId());
+        assertEquals(expectedUser.getId(), user.getId());
+        assertEquals(null, user.getSalt());
+        assertEquals(null, user.getPassword());
     }
 }

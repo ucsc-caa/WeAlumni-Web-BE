@@ -16,6 +16,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.ucsccaa.homepagebe.HomepageBeApplication;
 import org.ucsccaa.homepagebe.domains.Article;
@@ -85,7 +87,8 @@ public class ArticleServiceTest {
     @Test
     public void getArticleByCategoryPageOneTest() {
         List<Article> expectedList = new ArrayList<Article>(){{add(expectedArticle);}};
-        when(repository.findByCategoryOrderByPosttimeDesc(anyString())).thenReturn(expectedList);
+        Page<Article> page = new PageImpl<>(expectedList);
+        when(repository.findByCategory(anyString(), any())).thenReturn(page);
         List<Article> list = service.getArticleByCategory(expectedArticle.getCategory(), 1);
         assertEquals(expectedList, list);
     }
@@ -93,7 +96,7 @@ public class ArticleServiceTest {
     @Test
     public void getArticleByCategoryPageZeroTest() {
         List<Article> expectedList = new ArrayList<Article>(){{add(expectedArticle);}};
-        when(repository.findFirstByCategoryOrderByPosttimeDesc(anyString())).thenReturn(Optional.of(expectedArticle));
+        when(repository.findFirstByCategoryOrderByTimestampDesc(anyString())).thenReturn(Optional.of(expectedArticle));
         List<Article> list = service.getArticleByCategory(expectedArticle.getCategory(), 0);
         assertEquals(expectedList, list);
     }

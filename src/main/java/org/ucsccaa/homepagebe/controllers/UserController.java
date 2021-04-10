@@ -24,10 +24,10 @@ public class UserController {
 
     @ApiOperation("Add new User")
     @PostMapping("/register")
-    public ServiceResponse<URI> addUser(@RequestParam String email, @RequestParam String name, @RequestParam String password, HttpServletRequest req) throws URISyntaxException {
+    public ServiceResponse<URI> addUser(@RequestParam String username, @RequestParam String name, @RequestParam String password, HttpServletRequest req) throws URISyntaxException {
         try {
             User user = new User();
-            user.setEmail(email);
+            user.setUsername(username);
             user.setName(name);
             user.setPassword(password);
             Long id = service.addUser(user);

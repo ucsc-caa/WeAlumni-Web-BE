@@ -46,7 +46,7 @@ public class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/users/register")
                 .param("name", "name")
                 .param("password", "password")
-                .param("email", "@email")
+                .param("username", "@email")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.payload")
@@ -67,7 +67,7 @@ public class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/users/register")
                 .param("name", "name")
                 .param("password", "password")
-                .param("email", "@email")
+                .param("username", "@email")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("ERROR"));
     }

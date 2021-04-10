@@ -76,11 +76,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public Optional<User> authenticate(String email, String password) {
-        if (email == null || password == null) {
+    public Optional<User> authenticate(String username, String password) {
+        if (username == null || password == null) {
             throw new RuntimeException("argument cannot be null");
         }
-        Optional<User> user = userRepository.findByEmail(email);
+        Optional<User> user = userRepository.findByUsername(username);
         if (!user.isPresent()) {
             return Optional.empty();
         }
