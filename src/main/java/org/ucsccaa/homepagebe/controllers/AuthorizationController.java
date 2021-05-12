@@ -17,8 +17,8 @@ public class AuthorizationController {
     private AuthenticationService authenticationService;
 
     @PostMapping("authenticate")
-    public ServiceResponse<String> login(@RequestParam String username, @RequestParam String password) {
-        Optional<User> result = authenticationService.authenticate(username, password);
+    public ServiceResponse<String> login(@RequestParam String email, @RequestParam String password) {
+        Optional<User> result = authenticationService.authenticate(email, password);
         if (!result.isPresent()) {
             return new ServiceResponse<>(Status.NOT_FOUND, "User not found");
         }

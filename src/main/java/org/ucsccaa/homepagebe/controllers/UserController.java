@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.ucsccaa.homepagebe.domains.User;
@@ -24,14 +25,15 @@ public class UserController {
 
     @ApiOperation("Add new User")
     @PostMapping("/register")
-    public ServiceResponse<URI> addUser(@RequestParam String email, @RequestParam String name, @RequestParam String password, HttpServletRequest req) throws URISyntaxException {
+    public ServiceResponse<URI> addUser(@RequestParam String email, @RequestParam Integer uid, @RequestParam String password, HttpServletRequest req) throws URISyntaxException {
         try {
             User user = new User();
             user.setEmail(email);
-            user.setName(name);
+            user.setUid(uid);
             user.setPassword(password);
-            Long id = service.addUser(user);
-            return new ServiceResponse<>(new URI(req.getRequestURL() + "/" + id));
+            user.setEmailVerfied(false);
+            String user_email = service.addUser(user);
+            return new ServiceResponse<>(new URI(req.getRequestURL() + "/" + user_email));
         } catch (Exception e) {
             return new ServiceResponse<>(Status.ERROR, e.getMessage());
         }
@@ -39,11 +41,11 @@ public class UserController {
 
     @ApiOperation("Update existed User by ID")
     @PutMapping
-    public ServiceResponse<User> updateUser(@RequestParam Long id, @RequestParam String name, @RequestParam String password) {
+    public ServiceResponse<User> updateUser(@RequestParam Integer uid, @RequestParam String email, @RequestParam String password) {
         User updatedUser = null;
         User user = new User();
-        user.setId(id);
-        user.setName(name);
+        user.setUid(uid);
+        user.setEmail(email);
         user.setPassword(password);
         try {
             updatedUser = service.updateUser(user);
@@ -56,11 +58,11 @@ public class UserController {
     }
 
     @ApiOperation("Get User by ID")
-    @GetMapping("/{id}")
-    public ServiceResponse<User> getUserById(@PathVariable Long id) {
+    @GetMapping("/{email}")
+    public ServiceResponse<User> getUserById(@PathVariable String email) {
         User user = null;
         try {
-            user = service.getCensoredUserById(id);
+            user = service.getCensoredUserById(email);
             if (user == null)
                 return new ServiceResponse<>(Status.NOT_FOUND, "ID NOT FOUND");
         } catch (Exception e) {
