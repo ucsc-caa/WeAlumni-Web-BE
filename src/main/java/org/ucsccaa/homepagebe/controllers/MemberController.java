@@ -28,7 +28,6 @@ public class MemberController {
     @PostMapping
     public ServiceResponse<URI> addMember(@RequestBody Member member, HttpServletRequest req) throws URISyntaxException {
         Integer memberId;
-        System.out.println("this is a test");
         try {
             memberId = memberService.addMember(member);
             return new ServiceResponse<>(new URI(req.getRequestURL() + "/" + memberId));
@@ -51,7 +50,7 @@ public class MemberController {
 
     @ApiOperation("delete Member by ID")
     @DeleteMapping("/{id}")
-    public ServiceResponse<Object> deleteMember(@PathVariable Integer memberId) {
+    public ServiceResponse<Object> deleteMember(@PathVariable("id") Integer memberId) {
         boolean delete;
         try {
             delete = memberService.deleteMember(memberId);

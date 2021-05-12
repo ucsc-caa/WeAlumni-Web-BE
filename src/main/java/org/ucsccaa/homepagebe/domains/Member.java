@@ -40,13 +40,13 @@ public class Member {
         BRANCH,
         BOARD
     }
-    private class Address {
+    class Address {
         String street;
         String city;
         String country;
         String postal;
     }
-    private class Degree {
+    class Degree {
         String studentId;
         String program;
         Integer endYear;
@@ -54,7 +54,7 @@ public class Member {
         String major2;
         String minor;
     }
-    private class Career {
+    class Career {
         Boolean status;
         String company;
         String position;
