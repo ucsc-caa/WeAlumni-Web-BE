@@ -1,9 +1,6 @@
 package org.ucsccaa.homepagebe.domains;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,8 +14,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class Member {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer uid;
+    @OneToOne
+    @JoinColumn(name = "member_uid", referencedColumnName = "uid")
+    private User user;
     private Integer memberid;
     private Member.Status status;
     private String name;

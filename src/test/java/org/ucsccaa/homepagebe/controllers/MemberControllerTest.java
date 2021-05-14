@@ -37,7 +37,7 @@ public class MemberControllerTest {
     @InjectMocks
     private MemberController memberController;
 
-    private final Member expectedMember = new Member(1, 1, null, "test", true,
+    private final Member expectedMember = new Member(null, 1, null, "test", true,
                                                      null, "test", "test", "test",
                                                1, null, null, null, true);
 
@@ -53,7 +53,6 @@ public class MemberControllerTest {
     @Test
     public void addMemberTest() throws Exception {
         String json = objectMapper.writeValueAsString(expectedMember);
-        System.out.println("this is a test" + json);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
                 .post("/members")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -72,6 +71,19 @@ public class MemberControllerTest {
 
         mockMvc.perform(builder)
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    public void addMemberTest_exist() throws Exception {
+        when(memberService.addMember(expectedMember)).thenThrow(new RuntimeException("member already exist"));
+        String json = objectMapper.writeValueAsString(expectedMember);
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .post("/members")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mockMvc.perform(builder)
+                .andExpect(MockMvcResultMatchers.jsonPath("$.status").value("ERROR"));
     }
 
     @Test
@@ -111,7 +123,6 @@ public class MemberControllerTest {
 
         mockMvc.perform(builder)
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.payload.uid").value(expectedMember.getUid()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.payload.memberid").value(expectedMember.getMemberid()));
     }
 
