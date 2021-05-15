@@ -10,6 +10,6 @@ import org.ucsccaa.homepagebe.domains.Member;
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Integer>{
     Optional<Member> findByEmail(String email);
-    Boolean existsByMemberid(Integer memberid);
-    void deleteByMemberid(Integer memberid);
+    Boolean existsByMemberId(Integer memberId);
+    void deleteByMemberId(Integer memberId);
 }

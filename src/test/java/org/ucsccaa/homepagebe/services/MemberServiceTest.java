@@ -43,7 +43,7 @@ public class MemberServiceTest {
     @Test
     public void testAddMember() {
         Integer id = memberService.addMember(expectedMember);
-        Assert.assertEquals(expectedMember.getMemberid(), id);
+        Assert.assertEquals(expectedMember.getMemberId(), id);
     }
 
     @Test(expected = RuntimeException.class)
@@ -90,8 +90,8 @@ public class MemberServiceTest {
 
     @Test
     public void testGetMemberByEmail() {
-        Integer id = memberService.getMember("test").get().getMemberid();
-        Assert.assertEquals(expectedMember.getMemberid(), id);
+        Integer id = memberService.getMember("test").get().getMemberId();
+        Assert.assertEquals(expectedMember.getMemberId(), id);
     }
 
     @Test(expected = RuntimeException.class)
@@ -107,9 +107,9 @@ public class MemberServiceTest {
 
     @Test
     public void testDeleteMember() {
-        when(memberRepository.existsByMemberid(1)).thenReturn(true);
+        when(memberRepository.existsByMemberId(1)).thenReturn(true);
         memberService.deleteMember(1);
-        verify(memberRepository, times(1)).deleteByMemberid(1);
+        verify(memberRepository, times(1)).deleteByMemberId(1);
     }
 
     @Test(expected = RuntimeException.class)
@@ -119,7 +119,7 @@ public class MemberServiceTest {
 
     @Test
     public void testDeleteMember_notfound() {
-        when(memberRepository.existsByMemberid(1)).thenReturn(false);
+        when(memberRepository.existsByMemberId(1)).thenReturn(false);
         Boolean result = memberService.deleteMember(1);
         Assert.assertEquals(false, result);
     }

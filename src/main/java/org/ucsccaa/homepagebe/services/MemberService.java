@@ -20,15 +20,15 @@ public class MemberService {
         if (memberRepository.exists(Example.of(member))) {
             throw new RuntimeException("member already exists");
         }
-        return memberRepository.save(member).getMemberid();
+        return memberRepository.save(member).getMemberId();
     }
 
     public Integer updateMember(Member member) {
-        if (member == null || member.getMemberid() == null) {
+        if (member == null || member.getMemberId() == null) {
             throw new RuntimeException("argument cannot be null");
         }
-        if(memberRepository.existsById(member.getMemberid())) {
-            return memberRepository.save(member).getMemberid();
+        if(memberRepository.existsById(member.getMemberId())) {
+            return memberRepository.save(member).getMemberId();
         } else {
             throw new RuntimeException("member does not exist");
         }
@@ -38,8 +38,8 @@ public class MemberService {
         if (memberid == null) {
             throw new RuntimeException("argument cannot be null");
         }
-        if (memberRepository.existsByMemberid(memberid)) {
-            memberRepository.deleteByMemberid(memberid);
+        if (memberRepository.existsByMemberId(memberid)) {
+            memberRepository.deleteByMemberId(memberid);
             return true;
         }
         return false;

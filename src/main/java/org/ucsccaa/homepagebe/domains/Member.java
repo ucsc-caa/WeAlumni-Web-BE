@@ -17,7 +17,7 @@ public class Member {
     @OneToOne
     @JoinColumn(name = "member_uid", referencedColumnName = "uid")
     private User user;
-    private Integer memberid;
+    private Integer memberId;
     private Member.Status status;
     private String name;
     private Boolean gender;
@@ -31,28 +31,40 @@ public class Member {
     private Member.Career career;
     private Boolean search;
 
-    enum Status {
+    private enum Status {
         ACTIVE,
         PENDING,
         DEACTIVE,
         BRANCH,
         BOARD
     }
-    class Address {
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private class Address {
         String street;
         String city;
         String country;
         String postal;
     }
-    class Degree {
-        String studentId;
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private class Degree {
+        private String studentId;
         String program;
         Integer endYear;
         String major1;
         String major2;
         String minor;
     }
-    class Career {
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private class Career {
         Boolean status;
         String company;
         String position;
