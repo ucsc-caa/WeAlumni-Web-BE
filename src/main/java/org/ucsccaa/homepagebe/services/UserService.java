@@ -2,22 +2,33 @@ package org.ucsccaa.homepagebe.services;
 
 import java.util.Optional;
 
+import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.ucsccaa.homepagebe.domains.User;
 import org.ucsccaa.homepagebe.repositories.UserRepository;
+
+import javax.annotation.PostConstruct;
 
 @Service
 public class UserService {
     @Autowired
     private UserRepository repository;
+    @Value("${PWD_SECRET_KEY}")
+    private String secretKey;
+    private byte[] salt;
+    @PostConstruct
+    public void setSalt(){
+        salt = secretKey.getBytes();
+    }
     @Autowired
     private AuthenticationService authenticationService;
+
     public String addUser(User user) {
         if (user == null)
             throw new RuntimeException("USER CANNOT BE NULL");
-        user.setSalt(authenticationService.getSalt());
-        user.setPassword(authenticationService.encrypt(user.getPassword(),user.getSalt()));
+        user.setPassword(authenticationService.encrypt(user.getPassword(),salt));
         return repository.save(user).getEmail();
     }
 
