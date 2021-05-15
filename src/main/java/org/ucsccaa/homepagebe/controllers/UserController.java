@@ -37,13 +37,10 @@ public class UserController {
             User user = new User();
             user.setEmail(dataProtection.decrypt(email));
             user.setPassword(dataProtection.decrypt(password));
-            System.out.println("password");
             user.setEmailVerfied(false);
             service.addUser(user);
-            System.out.println("sss");
             return new ResponseEntity<>(new GeneralResponse(100, "continue"), HttpStatus.CONTINUE);
         } catch (Exception e) {
-            System.out.println("sss");
             return new GenericServiceException(ExceptionHandler.USERS_EXISTS,"User exist").getExceptionHandler().getResponseEntity();
         }
     }
