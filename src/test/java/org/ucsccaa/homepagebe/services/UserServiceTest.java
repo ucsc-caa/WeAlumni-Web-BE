@@ -24,7 +24,7 @@ public class UserServiceTest {
     private AuthenticationService authenticationService;
     @InjectMocks
     private UserService userService;
-    private final User expectedUser = new User((long)1, "name", "password", "email", null);
+    private final User expectedUser = new User((long)1, "name", "password", 1,"email", null);
 
     @Test
     public void addUserTest() {

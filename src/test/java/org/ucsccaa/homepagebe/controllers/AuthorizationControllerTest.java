@@ -27,7 +27,7 @@ public class AuthorizationControllerTest {
     private AuthenticationService authenticationService;
     @InjectMocks
     private UserController controller;
-    private final User expectedUser = new User((long)1, "name", "password", "email", null);
+    private final User expectedUser = new User((long)1, "name", "password", 1, "email", null);
 
     @Test
     public void authenticateSuccessTest() throws Exception {

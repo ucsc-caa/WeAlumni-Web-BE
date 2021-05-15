@@ -31,7 +31,7 @@ public class UserControllerTest {
     private UserService service;
     @InjectMocks
     private UserController controller;
-    private final User expectedUser = new User((long)1, "name", "password", "@email", null);
+    private final User expectedUser = new User((long)1, "name", "password", 1, "@email", null);
     private final String token = "test_token";
 
     @Before

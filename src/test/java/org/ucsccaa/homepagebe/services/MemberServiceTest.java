@@ -28,7 +28,7 @@ public class MemberServiceTest {
     @InjectMocks
     private MemberService memberService;
 
-    private final Member expectedMember = new Member(null, 1, null, "test", true, LocalDate.now(), "test", "test", "test", 1, null, null, null, true);
+    private final Member expectedMember = new Member(1, null, "test", true, LocalDate.now(), "test", "test", "test", 1,  null, null, null, true);
 
     @Before
     public void configure() {

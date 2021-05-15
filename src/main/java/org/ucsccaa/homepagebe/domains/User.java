@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Table;
 
 @Entity
 @Data
@@ -19,6 +20,7 @@ public class User {
     private Long id;
     private String name;
     private String password;
+    private Integer uid;
     private String email;
     private byte[] salt;
     // private String auth; // still needed?

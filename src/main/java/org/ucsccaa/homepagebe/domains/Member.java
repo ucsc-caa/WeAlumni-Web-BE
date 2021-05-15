@@ -14,11 +14,15 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class Member {
     @Id
-    @OneToOne
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer memberId;
+
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "member_uid", referencedColumnName = "uid")
     private User user;
-    private Integer memberId;
-    private Member.Status status;
+
+    //@Enumerated(EnumType.STRING)
+    //private Status status;
     private String name;
     private Boolean gender;
     private LocalDate birthday;
@@ -26,12 +30,16 @@ public class Member {
     private String phone;
     private String wechat;
     private Integer branch;
+
+    @Embedded
     private Member.Address address;
+    @Embedded
     private Member.Degree degree;
+    @Embedded
     private Member.Career career;
     private Boolean search;
 
-    private enum Status {
+    enum Status {
         ACTIVE,
         PENDING,
         DEACTIVE,
@@ -39,34 +47,28 @@ public class Member {
         BOARD
     }
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    private class Address {
-        String street;
-        String city;
-        String country;
-        String postal;
+    @Embeddable
+    class Address {
+        private String street;
+        private String city;
+        private String country;
+        private String postal;
     }
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    private class Degree {
+    @Embeddable
+    class Degree {
         private String studentId;
-        String program;
-        Integer endYear;
-        String major1;
-        String major2;
-        String minor;
+        private String program;
+        private Integer endYear;
+        private String major1;
+        private String major2;
+        private String minor;
     }
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    private class Career {
-        Boolean status;
-        String company;
-        String position;
+    @Embeddable
+    class Career {
+        private Boolean status;
+        private String company;
+        private String position;
     }
 }
