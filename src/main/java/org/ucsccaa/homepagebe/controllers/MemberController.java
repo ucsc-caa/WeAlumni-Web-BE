@@ -2,13 +2,16 @@ package org.ucsccaa.homepagebe.controllers;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.Provider;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.ucsccaa.homepagebe.domains.Member;
+import org.ucsccaa.homepagebe.models.GeneralResponse;
 import org.ucsccaa.homepagebe.models.ServiceResponse;
 import org.ucsccaa.homepagebe.models.Status;
 import org.ucsccaa.homepagebe.services.MemberService;
@@ -45,6 +48,16 @@ public class MemberController {
             return new ServiceResponse<>(new URI(req.getRequestURL() + "/" + memberId));
         } catch (Exception e) {
             return new ServiceResponse<>(Status.ERROR, e.getMessage());
+        }
+    }
+
+    @ApiOperation("Update existed Member")
+    @PutMapping("/{uid}")
+    public ResponseEntity<GeneralResponse<URI>> updateMember(@PathVariable("uid") Integer uid, @RequestBody Member member, HttpServletRequest req) throws URISyntaxException {
+        try {
+            memberService.updateMember(uid, member);
+
+        } catch (Exception e) {
         }
     }
 

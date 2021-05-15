@@ -21,8 +21,9 @@ public class Member {
     @JoinColumn(name = "member_uid", referencedColumnName = "uid")
     private User user;
 
-    //@Enumerated(EnumType.STRING)
-    //private Status status;
+    @Enumerated(EnumType.ORDINAL)
+    @Column(insertable = false, updatable = false)
+    private Status status;
     private String name;
     private Boolean gender;
     private LocalDate birthday;
@@ -39,15 +40,16 @@ public class Member {
     private Member.Career career;
     private Boolean search;
 
-    enum Status {
+    public enum Status {
         ACTIVE,
         PENDING,
-        DEACTIVE,
-        BRANCH,
-        BOARD
+        DEACTIVE
     }
 
     @Embeddable
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     class Address {
         private String street;
         private String city;
@@ -56,6 +58,9 @@ public class Member {
     }
 
     @Embeddable
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     class Degree {
         private String studentId;
         private String program;
@@ -66,6 +71,9 @@ public class Member {
     }
 
     @Embeddable
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     class Career {
         private Boolean status;
         private String company;

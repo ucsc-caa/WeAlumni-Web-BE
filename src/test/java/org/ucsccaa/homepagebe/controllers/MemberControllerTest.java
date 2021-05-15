@@ -37,7 +37,7 @@ public class MemberControllerTest {
     @InjectMocks
     private MemberController memberController;
 
-    private final Member expectedMember = new Member(1, null, "test", true,
+    private final Member expectedMember = new Member(1, null, null,"test", true,
                                                      null, "test", "test", "test",
                                                1, null, null, null, true);
 
