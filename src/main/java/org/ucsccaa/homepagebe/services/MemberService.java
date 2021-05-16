@@ -3,14 +3,19 @@ package org.ucsccaa.homepagebe.services;
 import java.lang.reflect.Field;
 import java.util.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.ucsccaa.homepagebe.domains.Member;
+import org.ucsccaa.homepagebe.exceptions.customizedExceptions.RequiredFieldIsNullException;
+import org.ucsccaa.homepagebe.exceptions.customizedExceptions.UserNotFoundException;
 import org.ucsccaa.homepagebe.repositories.MemberRepository;
 import org.ucsccaa.homepagebe.repositories.UserRepository;
-import org.ucsccaa.homepagebe.services.impl.SymmetricProtection;
+import org.ucsccaa.homepagebe.services.impl.SymmetricDataProtection;
+
 
 @Service
 public class MemberService {
@@ -18,68 +23,65 @@ public class MemberService {
     private  MemberRepository memberRepository;
     @Autowired
     private UserRepository userRepository;
-    private SymmetricProtection symmetricProtection;
+    private SymmetricDataProtection symmetricDataProtection;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public Integer addMember(Member member) {
-        if (member == null) {
-            throw new RuntimeException("argument cannot be null");
-        }
-        if (memberRepository.exists(Example.of(member))) {
-            throw new RuntimeException("member already exists");
-        }
-        return memberRepository.save(member).getMemberId();
-    }
-
-    public Integer updateMember(Member member) {
-        if (member == null || member.getMemberId() == null) {
-            throw new RuntimeException("argument cannot be null");
-        }
-        if(memberRepository.existsById(member.getMemberId())) {
-            return memberRepository.save(member).getMemberId();
-        } else {
-            throw new RuntimeException("member does not exist");
-        }
-    }
-
-    public Integer updateMember(Integer uid, Member member) throws IllegalAccessException {
+    public Integer updateMember(Integer uid, Member member) {
         if (member == null || uid == null) {
-            throw new RuntimeException("argument cannot be null");
+            throw new RequiredFieldIsNullException("Request field is NULL or empty: uid - " + uid + ", Member - " + member);
         }
-        if (!memberRepository.existsByMember_uid(uid)) {
-            throw new RuntimeException("member does not exist");
+        Member member1;
+        if (!memberRepository.findById(uid).isPresent()) {
+            throw new UserNotFoundException("No Such Member");
         }
-        Member member1 = memberRepository.findByMember_uid(uid).get();
-        BeanUtils.copyProperties(member, member1);
+        member1 = memberRepository.findById(uid).get();
 
         for (Field field : member.getClass().getDeclaredFields()) {
             field.setAccessible(true);
-            Object fieldValue = field.get(member);
-            Class<?> fieldType = field.getType();
-            if (fieldValue != null) {
-                String decrypt = symmetricProtection.decrypt((String) fieldValue);
+            Object fieldValue;
+            try {
+                fieldValue = field.get(member);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
 
-                field.set(member1, fieldType.cast(decrypt));
+            if (fieldValue != null) {
+                if (!isJDKClass(fieldValue)) {
+                    for (Field field1 : field.getClass().getDeclaredFields()) {
+                        field1.setAccessible(true);
+                        Object field1Value;
+                        try {
+                            field1Value = field1.get(member);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                        if(field1Value != null) {
+                            Object value = field1Value.getClass().equals(String.class) ? symmetricDataProtection.decrypt(field1Value.toString()) : field1Value;
+                            try {
+                                field1.set(member1, value);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+
+                        field1.setAccessible(false);
+                    }
+                } else {
+                    Object value = fieldValue.getClass().equals(String.class) ? symmetricDataProtection.decrypt(fieldValue.toString()) : fieldValue;
+                    try {
+                        field.set(member1, value);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             }
             field.setAccessible(false);
         }
-
+        logger.info("Updated member： uid - {}", uid);
         return memberRepository.save(member1).getMemberId();
     }
-    public Boolean deleteMember(Integer memberId) {
-        if (memberId == null) {
-            throw new RuntimeException("argument cannot be null");
-        }
-        if (memberRepository.existsByMemberId(memberId)) {
-            memberRepository.deleteByMemberId(memberId);
-            return true;
-        }
-        return false;
-    }
 
-    public Optional<Member> getMember(String email) {
-        if(email == null) {
-            throw new RuntimeException("argument cannot be null");
-        }
-        return memberRepository.findByEmail(email);
+    public static <T> boolean isJDKClass(T t) {
+        return t.getClass().getPackage().getName().startsWith("java");
     }
 }
