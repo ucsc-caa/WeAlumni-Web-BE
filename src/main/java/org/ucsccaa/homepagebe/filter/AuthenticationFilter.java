@@ -21,7 +21,7 @@ public class AuthenticationFilter implements Filter {
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         String method = httpServletRequest.getMethod();
         String uri = httpServletRequest.getRequestURI();
-        if ("POST".equals(method) && uri.contains("users") || "GET".equals(method) && uri.contains("articles")) {
+        if (("POST".equals(method) && uri.contains("users")) || ("GET".equals(method) && uri.contains("articles"))) {
             chain.doFilter(httpServletRequest, httpServletResponse);
         } else {
             try {
