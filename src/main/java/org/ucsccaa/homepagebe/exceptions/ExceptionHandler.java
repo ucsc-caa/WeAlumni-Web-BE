@@ -1,6 +1,5 @@
 package org.ucsccaa.homepagebe.exceptions;
 
-import com.sun.istack.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.ucsccaa.homepagebe.models.GeneralResponse;
@@ -36,10 +35,8 @@ public enum ExceptionHandler {
         return this;
     }
 
-    public <T> ResponseEntity<GeneralResponse<T>> getResponseEntity(@Nullable T body) {
-        return new ResponseEntity<>(
-                new GeneralResponse<>(this.internalStatusCode, this.message, body),
-                this.httpStatusCode);
+    public Integer getStatusCodeValue() {
+        return this.httpStatusCode.value();
     }
 
     public ResponseEntity<GeneralResponse> getResponseEntity() {

@@ -6,8 +6,8 @@ import org.springframework.util.StringUtils;
 import org.ucsccaa.homepagebe.services.DataProtection;
 
 @Service
-public class SymmetricProtection implements DataProtection {
-    @Value("${data.secret}")
+public class SymmetricDataProtection implements DataProtection {
+    @Value("${protection.data.secret:UCSCCAASIGNINGKEY}")
     private String secret;
 
     @Override

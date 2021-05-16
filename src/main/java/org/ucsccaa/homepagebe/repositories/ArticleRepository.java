@@ -9,6 +9,6 @@ import org.ucsccaa.homepagebe.domains.Article;
 
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Long> {
-    public List<Article> findByCategoryOrderByPosttimeDesc(String category);
-    public Optional<Article> findFirstByCategoryOrderByPosttimeDesc(String category);
+    List<Article> findByCategoryOrderByPosttimeDesc(String category);
+    Optional<Article> findFirstByCategoryOrderByPosttimeDesc(String category);
 }
