@@ -2,45 +2,56 @@ package org.ucsccaa.homepagebe.services;
 
 import java.util.Optional;
 
+import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.ucsccaa.homepagebe.domains.User;
 import org.ucsccaa.homepagebe.repositories.UserRepository;
+
+import javax.annotation.PostConstruct;
 
 @Service
 public class UserService {
     @Autowired
     private UserRepository repository;
+    @Value("${PWD_SECRET_KEY}")
+    private String secretKey;
+    private byte[] salt;
+    @PostConstruct
+    public void setSalt(){
+        salt = secretKey.getBytes();
+    }
     @Autowired
     private AuthenticationService authenticationService;
-    public Long addUser(User user) {
+
+    public String addUser(User user) {
         if (user == null)
             throw new RuntimeException("USER CANNOT BE NULL");
-        user.setSalt(authenticationService.getSalt());
-        user.setPassword(authenticationService.encrypt(user.getPassword(),user.getSalt()));
-        return repository.save(user).getId();
+        user.setPassword(authenticationService.encrypt(user.getPassword(),salt));
+        return repository.save(user).getEmail();
     }
 
     public User updateUser(User user) {
         if (user == null)
             throw new RuntimeException("USER CANNOT BE NULL");
-        if (user.getId() == null) 
+        if (user.getEmail() == null)
             throw new RuntimeException("USER ID CANNOT BE NULL");
-        return repository.existsById(user.getId()) ? repository.save(user) : null;
+        return repository.existsById(user.getEmail()) ? repository.save(user) : null;
     }
 
-    public User getUserById(Long id) {
-        if (id == null)
+    public User getUserById(String email) {
+        if (email == null)
             throw new RuntimeException("ID CANNOT BE NULL");
-        Optional<User> user = repository.findById(id);
-        return user.isPresent() ? user.get() : null;
+        Optional<User> user = repository.findById(email);
+        return user.orElse(null);
     }
 
-    public User getCensoredUserById(Long id) {
-        User oUser = getUserById(id);
+    public User getCensoredUserById(String email) {
+        User oUser = getUserById(email);
         User user = new User();
-        user.setId(oUser.getId());
-        user.setName(oUser.getName());
+        user.setEmail(oUser.getEmail());
+        user.setUid(oUser.getUid());
         user.setEmail(oUser.getEmail());
         return user;
     }

@@ -27,7 +27,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     private UserRepository userRepository;
 
-    public String getUserNameFromToken(String token) {
+    public String getEmailFromToken(String token) {
         if (token == null) {
             throw new RuntimeException("argument cannot be null");
         }
@@ -67,7 +67,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new RuntimeException("argument cannot be null");
         }
         return Jwts.builder()
-                .setSubject(user.getName())
+                .setSubject(user.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 3600000)) // 1h
 //                .claim("authorizationLevel", level)
@@ -94,13 +94,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public Boolean validateToken(String token) {
-        String userName;
+        String email;
         try {
-            userName = getUserNameFromToken(token);
+            email = getEmailFromToken(token);
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
         } catch (Exception e) {
             return false;
         }
-        return (userRepository.findByName(userName).isPresent());
+        return (userRepository.findByEmail(email).isPresent());
     }
 }
