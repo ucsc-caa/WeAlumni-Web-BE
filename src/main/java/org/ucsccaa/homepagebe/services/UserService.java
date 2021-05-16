@@ -1,48 +1,42 @@
 package org.ucsccaa.homepagebe.services;
 
-import java.util.Optional;
-
-import org.aspectj.lang.annotation.Before;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.ucsccaa.homepagebe.domains.Member;
 import org.ucsccaa.homepagebe.domains.User;
 import org.ucsccaa.homepagebe.exceptions.customizedExceptions.AuthenticationRequiredException;
-import org.ucsccaa.homepagebe.exceptions.customizedExceptions.BadRequestException;
 import org.ucsccaa.homepagebe.exceptions.customizedExceptions.RequiredFieldIsNullException;
 import org.ucsccaa.homepagebe.exceptions.customizedExceptions.UserExistException;
 import org.ucsccaa.homepagebe.repositories.UserRepository;
 
-import javax.annotation.PostConstruct;
-
 @Service
 public class UserService {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     private UserRepository repository;
 
     @Autowired
     private DataProtection dataProtection;
 
-    public String addUser(User user) {
-        if (user == null)
-            throw new RuntimeException("USER CANNOT BE NULL");
-        user.setPassword(dataProtection.encrypt(user.getPassword()));
-        return repository.save(user).getEmail();
-    }
     public void register(String email, String password) {
-        if(StringUtils.isEmpty(email) || StringUtils.isEmpty(password)){
-            throw new RequiredFieldIsNullException("Request field is NULL Email :"+email+" Password: "+password);
-        }
-        if (repository.existsById(email)){
+        if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password))
+            throw new RequiredFieldIsNullException("Request field is NULL or empty: email - " + email + ", password - " + password);
+
+        if (repository.existsById(email))
             throw new UserExistException(email);
-        }
+
         User user = new User(email,dataProtection.encrypt(password),null,false);
-        repository.save(user);
+        user = repository.save(user);
+        logger.info("Registered new user: uid - {}", user.getUid());
         //TODO add member
         //TODO email service
     }
+
     public User updateUser(User user) {
         if (user == null)
             throw new RuntimeException("USER CANNOT BE NULL");
