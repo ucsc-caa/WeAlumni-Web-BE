@@ -1,80 +1,50 @@
 package org.ucsccaa.homepagebe.controllers;
 
-
-import java.net.URISyntaxException;
-
 import javax.servlet.http.HttpServletRequest;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.ucsccaa.homepagebe.domains.User;
-import org.ucsccaa.homepagebe.exceptions.ExceptionHandler;
+import org.ucsccaa.homepagebe.domains.Member;
 import org.ucsccaa.homepagebe.exceptions.GenericServiceException;
 import org.ucsccaa.homepagebe.models.GeneralResponse;
-import org.ucsccaa.homepagebe.models.ServiceResponse;
-import org.ucsccaa.homepagebe.models.Status;
-import org.ucsccaa.homepagebe.services.DataProtection;
 import org.ucsccaa.homepagebe.services.UserService;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Api()
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class UserController {
-    @Autowired
-    private UserService service;
-    @Autowired
-    private DataProtection dataProtection;
 
-    @ApiOperation("Add new User")
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    private UserService userService;
+
+    @ApiOperation("Register new user")
     @PostMapping("/register")
-    public ResponseEntity<GeneralResponse> addUser(@RequestParam String email, @RequestParam String password, HttpServletRequest req) throws URISyntaxException {
+    public ResponseEntity<GeneralResponse> register(@RequestParam String email, @RequestParam String password) {
         try {
-            User user = new User();
-            user.setEmail(dataProtection.decrypt(email));
-            user.setPassword(dataProtection.decrypt(password));
-            user.setEmailVerfied(false);
-            service.addUser(user);
-            return new ResponseEntity<>(new GeneralResponse(100, "continue"), HttpStatus.CONTINUE);
-        } catch (Exception e) {
-            return new GenericServiceException(ExceptionHandler.USERS_EXISTS,"User exist").getExceptionHandler().getResponseEntity();
+            userService.register(email, password);
+            return new ResponseEntity<>(HttpStatus.CONTINUE);
+        } catch (GenericServiceException e) {
+            logger.error("Register new user failed: e - {}", e.getMessage());
+            return e.getExceptionHandler().getResponseEntity();
         }
     }
 
-//    @ApiOperation("Update existed User by ID")
-//    @PutMapping
-//    public ServiceResponse<User> updateUser(@RequestParam Integer uid, @RequestParam String email, @RequestParam String password) {
-//        User updatedUser = null;
-//        User user = new User();
-//        user.setUid(uid);
-//        user.setEmail(email);
-//        user.setPassword(password);
-//        try {
-//            updatedUser = service.updateUser(user);
-//            if (updatedUser == null)
-//                return new ServiceResponse<>(Status.NOT_FOUND, "USER NOT FOUND");
-//        } catch (Exception e) {
-//            return new ServiceResponse<>(Status.ERROR, e.getMessage());
-//        }
-//        return new ServiceResponse<>(updatedUser);
-//    }
-
-    @ApiOperation("Get User by ID")
-    @GetMapping("/{Uid}")
-    public ServiceResponse<User> getUserById(@PathVariable String email) {
-        User user = null;
+    @ApiOperation("Get user's membership info by UID")
+    @GetMapping("/{uid}")
+    public ResponseEntity<GeneralResponse> getUserById(@PathVariable Integer uid, HttpServletRequest request) {
+        String bear_token = request.getHeader("authorization");
         try {
-            user = service.getCensoredUserById(email);
-            if (user == null)
-                return new ServiceResponse<>(Status.NOT_FOUND, "ID NOT FOUND");
-        } catch (Exception e) {
-            return new ServiceResponse<>(Status.ERROR, e.getMessage());
+            Member member = userService.getUserByUid(bear_token,uid);
+            return new ResponseEntity<>(new GeneralResponse<>(member), HttpStatus.OK);
+        } catch (GenericServiceException e) {
+            return e.getExceptionHandler().getResponseEntity();
         }
-        return new ServiceResponse<>(user);
     }
 
 }

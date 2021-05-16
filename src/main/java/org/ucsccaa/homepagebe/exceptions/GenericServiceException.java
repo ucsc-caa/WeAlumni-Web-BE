@@ -7,6 +7,7 @@ public class GenericServiceException extends RuntimeException {
     }
     public GenericServiceException(ExceptionHandler exceptionHandler, String message) {
         super(message);
+        this.exceptionHandler = exceptionHandler;
     }
 
     public ExceptionHandler getExceptionHandler() {
