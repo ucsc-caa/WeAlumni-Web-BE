@@ -28,7 +28,7 @@ public class UserController {
     public ResponseEntity<GeneralResponse> register(@RequestParam String email, @RequestParam String password) {
         try {
             userService.register(email, password);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(new GeneralResponse(2101, "User Created", null), HttpStatus.OK);
         } catch (GenericServiceException e) {
             logger.error("Register new user failed: e - {}", e.getMessage());
             return e.getExceptionHandler().getResponseEntity();

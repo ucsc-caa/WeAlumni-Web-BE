@@ -5,11 +5,13 @@ import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ucsccaa.homepagebe.utils.Encryptable;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Encryptable
 public class User {
     @Id
     @Column(unique = true)
