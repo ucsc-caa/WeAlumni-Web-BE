@@ -5,6 +5,7 @@ import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ucsccaa.homepagebe.utils.Encryptable;
 
 import java.time.LocalDate;
 
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Encryptable
 public class Member {
     @Id
     private Integer uid;
@@ -45,6 +47,7 @@ public class Member {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
+    @Encryptable
     public static class Address {
         private String street;
         private String city;
@@ -56,6 +59,7 @@ public class Member {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
+    @Encryptable
     public static class Degree {
         private String studentId;
         private String program;
@@ -69,6 +73,7 @@ public class Member {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
+    @Encryptable
     public static class Career {
         private Boolean status;
         private String company;
