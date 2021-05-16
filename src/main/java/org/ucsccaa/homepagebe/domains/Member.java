@@ -14,14 +14,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class Member {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer uid;
+    @Column(unique = true)
     private Integer memberId;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "member_uid", referencedColumnName = "uid")
-    private User user;
-
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     @Column(insertable = false, updatable = false)
     private Status status;
     private String name;
@@ -31,7 +27,6 @@ public class Member {
     private String phone;
     private String wechat;
     private Integer branch;
-
     @Embedded
     private Member.Address address;
     @Embedded
@@ -50,7 +45,7 @@ public class Member {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    class Address {
+    public static class Address {
         private String street;
         private String city;
         private String country;
@@ -61,7 +56,7 @@ public class Member {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    class Degree {
+    public static class Degree {
         private String studentId;
         private String program;
         private Integer endYear;
@@ -74,7 +69,7 @@ public class Member {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    class Career {
+    public static class Career {
         private Boolean status;
         private String company;
         private String position;
