@@ -7,7 +7,7 @@ import org.ucsccaa.homepagebe.domains.User;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByName(String name);
+public interface UserRepository extends JpaRepository<User, String> {
+    Optional<User> findByUid(Integer uid);
     Optional<User> findByEmail(String email);
 }

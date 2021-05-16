@@ -1,9 +1,6 @@
 package org.ucsccaa.homepagebe.domains;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,11 +12,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
-    private String password;
+    @Column(unique = true)
     private String email;
-    private byte[] salt;
-    // private String auth; // still needed?
+    private String password;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable=false, insertable = false, updatable = false, columnDefinition="int not null UNIQUE key auto_increment")
+    private Integer uid;
+    private Boolean emailVerified;
 }
