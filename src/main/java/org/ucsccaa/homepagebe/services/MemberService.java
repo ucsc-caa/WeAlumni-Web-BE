@@ -23,7 +23,7 @@ public class MemberService {
     private  MemberRepository memberRepository;
     @Autowired
     private UserRepository userRepository;
-    private SymmetricDataProtection symmetricDataProtection;
+    private DataProtection dataProtection;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public Integer updateMember(Integer uid, Member member) {
@@ -56,7 +56,7 @@ public class MemberService {
                             throw new RuntimeException(e);
                         }
                         if(field1Value != null) {
-                            Object value = field1Value.getClass().equals(String.class) ? symmetricDataProtection.decrypt(field1Value.toString()) : field1Value;
+                            Object value = field1Value.getClass().equals(String.class) ? dataProtection.decrypt(field1Value.toString()) : field1Value;
                             try {
                                 field1.set(member1, value);
                             } catch (Exception e) {
@@ -67,7 +67,7 @@ public class MemberService {
                         field1.setAccessible(false);
                     }
                 } else {
-                    Object value = fieldValue.getClass().equals(String.class) ? symmetricDataProtection.decrypt(fieldValue.toString()) : fieldValue;
+                    Object value = fieldValue.getClass().equals(String.class) ? dataProtection.decrypt(fieldValue.toString()) : fieldValue;
                     try {
                         field.set(member1, value);
                     } catch (Exception e) {

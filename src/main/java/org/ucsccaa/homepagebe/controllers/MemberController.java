@@ -7,10 +7,15 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.ucsccaa.homepagebe.domains.Member;
+import org.ucsccaa.homepagebe.exceptions.ExceptionHandler;
+import org.ucsccaa.homepagebe.exceptions.GenericServiceException;
 import org.ucsccaa.homepagebe.models.GeneralResponse;
 import org.ucsccaa.homepagebe.models.ServiceResponse;
 import org.ucsccaa.homepagebe.models.Status;
@@ -21,73 +26,34 @@ import io.swagger.annotations.ApiOperation;
 
 @Api()
 @RestController
-@RequestMapping("/members")
+@RequestMapping("/member")
 public class MemberController {
 
     @Autowired
     private MemberService memberService;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @ApiOperation("Add new Member")
-    @PostMapping
-    public ServiceResponse<URI> addMember(@RequestBody Member member, HttpServletRequest req) throws URISyntaxException {
-        Integer memberId;
+    @ApiOperation("Update existed Member")
+    @PutMapping("/{uid}")
+    public ResponseEntity<GeneralResponse> updateMember(@PathVariable("uid") Integer uid, @RequestBody Member member) {
         try {
-            memberId = memberService.addMember(member);
-            return new ServiceResponse<>(new URI(req.getRequestURL() + "/" + memberId));
+            memberService.updateMember(uid, member);
+            return new ResponseEntity<>(new GeneralResponse(200, "Success", null), HttpStatus.OK);
         } catch (Exception e) {
-            return new ServiceResponse<>(Status.ERROR, e.getMessage());
-        }
-    }
-
-    @ApiOperation("Update existed Member by MemberID")
-    @PutMapping
-    public  ServiceResponse<URI> updateMember(@RequestBody Member member, HttpServletRequest req) throws URISyntaxException {
-        Integer memberId;
-        try {
-            memberId = memberService.updateMember(member);
-            return new ServiceResponse<>(new URI(req.getRequestURL() + "/" + memberId));
-        } catch (Exception e) {
-            return new ServiceResponse<>(Status.ERROR, e.getMessage());
+            logger.error("Update user failed: e - {}", e.getMessage());
+            return ExceptionHandler.BAD_REQUEST.setMessage(e.getMessage()).getResponseEntity();
         }
     }
 
     @ApiOperation("Update existed Member")
-    @PutMapping("/{uid}")
-    public ResponseEntity<GeneralResponse<URI>> updateMember(@PathVariable("uid") Integer uid, @RequestBody Member member, HttpServletRequest req) throws URISyntaxException {
+    @PostMapping("/{uid}")
+    public ResponseEntity<GeneralResponse> updateEntireMember(@PathVariable("uid") Integer uid, @RequestBody Member member) {
         try {
             memberService.updateMember(uid, member);
-
+            return new ResponseEntity<>(new GeneralResponse(200, "Success", null), HttpStatus.OK);
         } catch (Exception e) {
+            logger.error("Update user failed: e - {}", e.getMessage());
+            return ExceptionHandler.BAD_REQUEST.setMessage(e.getMessage()).getResponseEntity();
         }
-    }
-
-    @ApiOperation("delete Member by ID")
-    @DeleteMapping("/{id}")
-    public ServiceResponse<Object> deleteMember(@PathVariable("id") Integer memberId) {
-        boolean delete;
-        try {
-            delete = memberService.deleteMember(memberId);
-            if (!delete) {
-                return new ServiceResponse<>(Status.NOT_FOUND, "ID NOT FOUND");
-            }
-        } catch (Exception e) {
-            return new ServiceResponse<>(Status.ERROR, e.getMessage());
-        }
-        return new ServiceResponse<>();
-    }
-
-    @ApiOperation("get Member by email")
-    @GetMapping("/email/{email}")
-    public ServiceResponse<Member> getMember(@PathVariable("email") String email) {
-        Optional<Member> member;
-        try {
-            member = memberService.getMember(email);
-            if (!member.isPresent()) {
-                return new ServiceResponse<>(Status.NOT_FOUND, "ID NOT FOUND");
-            }
-        } catch (Exception e) {
-            return new ServiceResponse<>(Status.ERROR, e.getMessage());
-        }
-        return new ServiceResponse<Member>(member.get());
     }
 }
