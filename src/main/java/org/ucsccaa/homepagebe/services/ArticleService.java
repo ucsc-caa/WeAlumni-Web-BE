@@ -3,7 +3,6 @@ package org.ucsccaa.homepagebe.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -29,8 +28,31 @@ public class ArticleService {
     @Autowired
     private ArticlePagingRepository articlePagingRepository;
 
+    private final List<String> categories = new ArrayList<>();
     private final Sort sort = Sort.by(Sort.Direction.DESC, "timestamp");
     private final int pageSize = 10;
+
+    public List<String> getCategories() {
+        if (categories.isEmpty())
+            categories.addAll(articleRepository.getAllCategories());
+        return categories;
+    }
+
+    public List<Article> getArticleByCategory(String category, Integer page) {
+        return articlePagingRepository.findAllByCategoryIs(category, PageRequest.of(page, pageSize, sort))
+                .getContent();
+    }
+
+    public Article getArticle(Integer id) {
+        if (id == null)
+            throw new BadRequestException("Param id cannot be null");
+        Optional<Article> article = articleRepository.findById(id);
+        return article.orElse(null);
+    }
+
+    public List<Article> getArticleByPaging(Integer page) {
+        return articlePagingRepository.findAll(PageRequest.of(page, pageSize, sort)).getContent();
+    }
 
     public Article addArticle(Article article) {
         if (article == null)
@@ -56,29 +78,6 @@ public class ArticleService {
         article.setTimestamp(CommonUtils.getCurrentDateTime());
         logger.info("Succeeded to update an article: id-{}, title-{}", article.getId(), article.getTitle());
         return articleRepository.save(article);
-    }
-
-    public Article getArticle(Integer id) {
-        if (id == null)
-            throw new BadRequestException("Param id cannot be null");
-        Optional<Article> article = articleRepository.findById(id);
-        return article.orElse(null);
-    }
-
-    public List<Article> getArticleByCategory(String category, Integer page) {
-        return articlePagingRepository.findAllByCategoryIs(category, PageRequest.of(page, pageSize, sort))
-                .getContent();
-    }
-
-    public List<Article> getArticleByCategory(Integer page) {
-        return articlePagingRepository.findAll(PageRequest.of(page, pageSize, sort)).getContent();
-    }
-
-    private final List<String> categories = new ArrayList<>();
-    public List<String> getCategories() {
-        if (categories.isEmpty())
-            categories.addAll(articleRepository.getAllCategories());
-        return categories;
     }
 
     public void deleteArticleById(Integer id) {
