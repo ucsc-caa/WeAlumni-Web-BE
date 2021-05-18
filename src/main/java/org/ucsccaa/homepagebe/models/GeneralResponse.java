@@ -10,14 +10,14 @@ import lombok.NoArgsConstructor;
 public class GeneralResponse<T> {
     private int code;
     private String message;
-    private T body;
+    private T payload;
 
-    public GeneralResponse(T body) {
-        this(200, body);
+    public GeneralResponse(T payload) {
+        this(200, payload);
     }
 
-    public GeneralResponse(int code, T body) {
+    public GeneralResponse(int code, T payload) {
         this.code = code;
-        this.body = body;
+        this.payload = payload;
     }
 }
