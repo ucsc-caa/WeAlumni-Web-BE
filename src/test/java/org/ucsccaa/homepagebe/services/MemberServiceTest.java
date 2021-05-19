@@ -32,7 +32,7 @@ public class MemberServiceTest {
     private final Member.Degree degree = new Member.Degree("studentId", "program", 2021, "major1", "major2", "minor");
     private final Member.Career career = new Member.Career(true, "company", "position");
     private final Member.Status status = Member.Status.PENDING;
-    private final Member expectedMember = new Member(1, 1,status, "name", true, LocalDate.now(), "email", "phone", "wechat", 1,  address, degree, career, true);
+    private final Member expectedMember = new Member(1, 1,status, "name", true, "LocalDate.now()", "email", "phone", "wechat", 1,  address, degree, career, true);
 
     @Before
     public void configure() {
@@ -50,12 +50,13 @@ public class MemberServiceTest {
         Member.Degree degree1 = new Member.Degree("test", "test", 2021, "test", "test", "test");
         Member.Career career1 = new Member.Career(true, "company", "position");
         Member.Status status1 = Member.Status.PENDING;
-        Member expectedMember1 = new Member(1, null, status1, "test", true, LocalDate.now(), "test", "test", "test", 1,  address1, degree1, career1, true);
+        Member expectedMember1 = new Member(1, null, status1, "test", true, "LocalDate.now()", "test", "test", "test", 1,  address1, degree1, career1, true);
         when(memberRepository.existsById(any())).thenReturn(true);
         when(memberRepository.findById(any())).thenReturn(Optional.of(expectedMember));
         Integer id = memberService.updateMember(1, expectedMember1);
         Assert.assertEquals(Optional.of(1), Optional.of(id));
     }
+
 
 /*
     @Test

@@ -23,7 +23,8 @@ public class MemberService {
     private  MemberRepository memberRepository;
     @Autowired
     private UserRepository userRepository;
-    private DataProtection dataProtection;
+    @Autowired
+    private SymmetricDataProtection symmetricDataProtection;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public Integer updateMember(Integer uid, Member member) {
@@ -35,7 +36,7 @@ public class MemberService {
             throw new UserNotFoundException("No Such Member");
         }
         member1 = memberRepository.findById(uid).get();
-
+        member = symmetricDataProtection.decrypt(member);
         for (Field field : member.getClass().getDeclaredFields()) {
             field.setAccessible(true);
             Object fieldValue;
@@ -56,9 +57,9 @@ public class MemberService {
                             throw new RuntimeException(e);
                         }
                         if(field1Value != null) {
-                            Object value = field1Value.getClass().equals(String.class) ? dataProtection.decrypt(field1Value.toString()) : field1Value;
+                            //Object value = field1Value.getClass().equals(String.class) ? symmetricDataProtection.decrypt(field1Value.toString()) : field1Value;
                             try {
-                                field1.set(member1, value);
+                                field1.set(member1, field1Value);
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
@@ -67,9 +68,9 @@ public class MemberService {
                         field1.setAccessible(false);
                     }
                 } else {
-                    Object value = fieldValue.getClass().equals(String.class) ? dataProtection.decrypt(fieldValue.toString()) : fieldValue;
+                    //Object value = fieldValue.getClass().equals(String.class) ? symmetricDataProtection.decrypt(fieldValue.toString()) : fieldValue;
                     try {
-                        field.set(member1, value);
+                        field.set(member1, fieldValue);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }

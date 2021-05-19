@@ -24,7 +24,7 @@ public class Member {
     private Status status;
     private String name;
     private Boolean gender;
-    private LocalDate birthday;
+    private String birthday;
     private String email;
     private String phone;
     private String wechat;
