@@ -15,10 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.ucsccaa.homepagebe.domains.Member;
 import org.ucsccaa.homepagebe.exceptions.ExceptionHandler;
-import org.ucsccaa.homepagebe.exceptions.GenericServiceException;
 import org.ucsccaa.homepagebe.models.GeneralResponse;
-import org.ucsccaa.homepagebe.models.ServiceResponse;
-import org.ucsccaa.homepagebe.models.Status;
 import org.ucsccaa.homepagebe.services.MemberService;
 
 import io.swagger.annotations.Api;
@@ -49,7 +46,7 @@ public class MemberController {
     @PostMapping("/{uid}")
     public ResponseEntity<GeneralResponse> updateEntireMember(@PathVariable("uid") Integer uid, @RequestBody Member member) {
         try {
-            memberService.updateMember(uid, member);
+            memberService.updateEntireMember(uid, member);
             return new ResponseEntity<>(new GeneralResponse(200, "Success", null), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Update user failed: e - {}", e.getMessage());

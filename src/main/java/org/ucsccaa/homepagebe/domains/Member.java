@@ -7,8 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ucsccaa.homepagebe.utils.Encryptable;
 
-import java.time.LocalDate;
-
 @Entity
 @Data
 @AllArgsConstructor
