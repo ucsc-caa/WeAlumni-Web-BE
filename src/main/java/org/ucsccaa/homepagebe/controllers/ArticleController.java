@@ -1,97 +1,98 @@
 package org.ucsccaa.homepagebe.controllers;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.ucsccaa.homepagebe.domains.Article;
-import org.ucsccaa.homepagebe.models.ServiceResponse;
-import org.ucsccaa.homepagebe.models.Status;
+import org.ucsccaa.homepagebe.exceptions.GenericServiceException;
+import org.ucsccaa.homepagebe.models.GeneralResponse;
 import org.ucsccaa.homepagebe.services.ArticleService;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Api(tags = "Article RESTful API")
 @RestController
-@RequestMapping("/articles")
+@RequestMapping("/article")
 public class ArticleController {
     @Autowired
-    private ArticleService service;
+    private ArticleService articleService;
+
+    @ApiOperation("Get a list of all Categories")
+    @GetMapping("/categories")
+    public ResponseEntity<GeneralResponse<List<String>>> getCategories() {
+        return new ResponseEntity<>(new GeneralResponse<>(articleService.getCategories()), HttpStatus.OK);
+    }
+
+    @ApiOperation("Get Articles by Category and Paging.")
+    @GetMapping("/category/{category}/page/{page}")
+    public ResponseEntity<GeneralResponse> getArticleByCategory(
+            @PathVariable String category,
+            @PathVariable Integer page) {
+        try {
+            List<Article> articles = articleService.getArticleByCategory(category, page);
+            return new ResponseEntity<>(new GeneralResponse<>(articles), HttpStatus.OK);
+        } catch (GenericServiceException e) {
+            return e.getExceptionHandler().getResponseEntity();
+        }
+    }
+
+    @ApiOperation("Get Article by ID")
+    @GetMapping("/{id}")
+    public ResponseEntity<GeneralResponse> getArticle(@PathVariable Integer id) {
+        try {
+            Article article = articleService.getArticle(id);
+            if (article == null)
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new GeneralResponse<>(article), HttpStatus.OK);
+        } catch (GenericServiceException e) {
+            return e.getExceptionHandler().getResponseEntity();
+        }
+    }
+
+    @ApiOperation("Get Articles in Paging.")
+    @GetMapping("/page/{page}")
+    public ResponseEntity<GeneralResponse> getArticleInPaging(@PathVariable Integer page) {
+        try {
+            List<Article> articles = articleService.getArticleByPaging(page);
+            return new ResponseEntity<>(new GeneralResponse<>(articles), HttpStatus.OK);
+        } catch (GenericServiceException e) {
+            return e.getExceptionHandler().getResponseEntity();
+        }
+    }
 
     @ApiOperation("Add new Article")
     @PostMapping
-    public ServiceResponse<URI> addArticle(@RequestBody Article article, HttpServletRequest req) throws URISyntaxException {
+    public ResponseEntity<GeneralResponse> addArticle(@RequestBody Article article) {
         try {
-            Long id = service.addArticle(article);
-            return new ServiceResponse<>(new URI(req.getRequestURL() + "/" + id));
-        } catch (Exception e) {
-            return new ServiceResponse<>(Status.ERROR, e.getMessage());
+            Article savedArticle = articleService.addArticle(article);
+            return new ResponseEntity<>(new GeneralResponse<>(2102, "Resource Created", savedArticle), HttpStatus.CREATED);
+        } catch (GenericServiceException e) {
+            return e.getExceptionHandler().getResponseEntity();
         }
     }
 
     @ApiOperation("Update existed Article by ID")
     @PutMapping
-    public ServiceResponse<Article> updateArticle(@RequestBody Article article) {
-        Article updatedArticle = null;
+    public ResponseEntity<GeneralResponse> updateArticle(@RequestBody Article article) {
         try {
-            updatedArticle = service.updateArticle(article);
-            if (updatedArticle == null)
-                return new ServiceResponse<>(Status.NOT_FOUND, "ARTICLE NOT FOUND");
-        } catch (Exception e) {
-            return new ServiceResponse<>(Status.ERROR, e.getMessage());
+            Article updatedArticle = articleService.updateArticle(article);
+            return new ResponseEntity<>(new GeneralResponse<>(updatedArticle), HttpStatus.OK);
+        } catch (GenericServiceException e) {
+            return e.getExceptionHandler().getResponseEntity();
         }
-        return new ServiceResponse<>(updatedArticle);
-    }
-
-    @ApiOperation("Get Article by ID")
-    @GetMapping("/{id}")
-    public ServiceResponse<Article> getArticle(@PathVariable Long id) {
-        Article article = null;
-        try {
-            article = service.getArticle(id);
-            if (article == null)
-                return new ServiceResponse<>(Status.NOT_FOUND, "ID NOT FOUND");
-        } catch (Exception e) {
-            return new ServiceResponse<>(Status.ERROR, e.getMessage());
-        }
-        return new ServiceResponse<>(article);
-    }
-
-    @ApiOperation("Get Articles by Category and Page")
-    @GetMapping
-    public ServiceResponse<List<Article>> getArticleByCategory(@RequestParam String category, @RequestParam Integer page) {
-        List<Article> list;
-        try {
-            list = service.getArticleByCategory(category, page);
-        } catch (Exception e) {
-            return new ServiceResponse<>(Status.ERROR, e.getMessage());
-        }
-        return new ServiceResponse<>(list);
     }
 
     @ApiOperation("Delete Article by ID")
     @DeleteMapping("/{id}")
-    public ServiceResponse<Object> deleteArticleById(@PathVariable Long id) {
+    public ResponseEntity<GeneralResponse> deleteArticleById(@PathVariable Integer id) {
         try {
-            boolean deleted = service.deleteArticleById(id);
-            if (!deleted)
-                return new ServiceResponse<>(Status.NOT_FOUND, "ID NOT FOUND");
-        } catch (Exception e) {
-            return new ServiceResponse<>(Status.ERROR, e.getMessage());
+            articleService.deleteArticleById(id);
+            return new ResponseEntity<>(new GeneralResponse<>(), HttpStatus.OK);
+        } catch (GenericServiceException e) {
+            return e.getExceptionHandler().getResponseEntity();
         }
-        return new ServiceResponse<>();
     }
+
 }

@@ -1,4 +1,4 @@
-//package org.ucsccaa.homepagebe.controllers;
+package org.ucsccaa.homepagebe.controllers;
 //
 //import static org.mockito.ArgumentMatchers.*;
 //import static org.mockito.Mockito.when;
@@ -29,9 +29,20 @@
 //import java.util.ArrayList;
 //import java.util.List;
 //
-//@RunWith(SpringRunner.class)
-//@SpringBootTest(classes = HomepageBeApplication.class)
-//public class ArticleControllerTest {
+
+import org.junit.Test;
+import org.ucsccaa.homepagebe.utils.AppConstants;
+import org.ucsccaa.homepagebe.utils.CommonUtils;
+
+import java.time.LocalDateTime;
+
+public class ArticleControllerTest {
+    @Test
+    public void test() {
+        System.out.println(CommonUtils.getCurrentDate());
+        System.out.println(CommonUtils.getCurrentDateTime());
+    }
+}
 //    protected MockMvc mockMvc;
 //    private final ObjectMapper objectMapper = new ObjectMapper();
 //    @Mock
