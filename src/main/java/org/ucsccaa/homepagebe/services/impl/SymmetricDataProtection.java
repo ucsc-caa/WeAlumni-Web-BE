@@ -1,5 +1,6 @@
 package org.ucsccaa.homepagebe.services.impl;
 
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -7,22 +8,50 @@ import org.ucsccaa.homepagebe.exceptions.customizedExceptions.ServerErrorExcepti
 import org.ucsccaa.homepagebe.services.DataProtection;
 import org.ucsccaa.homepagebe.utils.Encryptable;
 
+import javax.annotation.PostConstruct;
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
 
 @Service
 public class SymmetricDataProtection implements DataProtection {
 
-    @Value("${protection.data.secret:UCSCCAASIGNINGKEY}")
+    @Value("${protection.data.secret:UCSCCAADEVSECRET}")
     private String secret;
+
+    private final Cipher encryptCipher;
+    private final Cipher decryptCipher;
+
+    @PostConstruct
+    public void configureCipher() throws Exception {
+        encryptCipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(secret.getBytes(), "AES"));
+        decryptCipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(secret.getBytes(), "AES"));
+    }
+
+    public SymmetricDataProtection() throws NoSuchPaddingException, NoSuchAlgorithmException {
+        encryptCipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        decryptCipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+    }
 
     @Override
     public String encrypt(String plain) {
-        return encrypt(plain, secret);
+        try {
+            return _encrypt(plain);
+        } catch (Exception e) {
+            throw new ServerErrorException("Failed to encrypt: plain - " + plain);
+        }
     }
 
     @Override
     public String decrypt(String cipher) {
-        return decrypt(cipher, secret);
+        try {
+            return _decrypt(cipher);
+        } catch (Exception e) {
+            throw new ServerErrorException("Failed to decrypt: cipher - " + cipher);
+        }
     }
 
     @Override
@@ -37,7 +66,7 @@ public class SymmetricDataProtection implements DataProtection {
             for (Field field : fields) {
                 field.setAccessible(true);
                 if (field.getType() == String.class)
-                    field.set(plain, encrypt((String) field.get(plain), secret));
+                    field.set(plain, _encrypt((String) field.get(plain)));
                 else if (field.getType().isAnnotationPresent(Encryptable.class))
                     field.set(plain, encrypt(field.get(plain)));
             }
@@ -54,9 +83,10 @@ public class SymmetricDataProtection implements DataProtection {
         try {
             for (Field field : fields) {
                 field.setAccessible(true);
-                if (field.getType() == String.class)
-                    field.set(cipher, decrypt((String) field.get(cipher), secret));
-                else if (field.getType().isAnnotationPresent(Encryptable.class))
+                if (field.getType() == String.class) {
+                    String ans = _decrypt((String) field.get(cipher));
+                    field.set(cipher, ans);
+                }else if (field.getType().isAnnotationPresent(Encryptable.class))
                     field.set(cipher, decrypt(field.get(cipher)));
             }
         } catch (Exception e) {
@@ -66,29 +96,21 @@ public class SymmetricDataProtection implements DataProtection {
         return cipher;
     }
 
-    private String encrypt(String plain, String secret) {
+    private String _encrypt(String plain) throws Exception {
         if (StringUtils.isEmpty(plain))
             return null;
-        // TODO: add actual data encryption logic
-        // ATTENTION: BELOW LOGIC IS TEMPORARY BLOCK FOR TEST PURPOSE　ONLY
-        try {
-            plain = plain.concat(secret);
-        } catch (Exception e) {
-            System.out.println("FAILED: plain=" + plain);
-        }
-        return plain;
+
+        byte[] b = encryptCipher.doFinal(plain.getBytes(StandardCharsets.UTF_8));
+        return Base64.encodeBase64String(b);
     }
 
-    private String decrypt(String cipher, String secret) {
+    private String _decrypt(String cipher) throws Exception {
         if (StringUtils.isEmpty(cipher))
             return null;
-        // TODO: add actual data decryption logic
-        // ATTENTION: BELOW LOGIC IS TEMPORARY BLOCK FOR TEST PURPOSE　ONLY
-        try {
-            cipher = cipher.substring(0, cipher.length()-6);
-        } catch (Exception e) {
-            System.out.println("FAILED: cipher=" + cipher);
-        }
-        return cipher;
+
+        // Use base64 algorithm to decode, avoiding Chinese garbled codes
+        byte[] cipherBytes = Base64.decodeBase64(cipher);
+        byte[] decryptBytes = decryptCipher.doFinal(cipherBytes);
+        return new String(decryptBytes);
     }
 }
