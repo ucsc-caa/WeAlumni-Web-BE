@@ -5,11 +5,10 @@ import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.ucsccaa.homepagebe.domains.Member;
+import org.ucsccaa.homepagebe.domains.User;
 import org.ucsccaa.homepagebe.exceptions.customizedExceptions.RequiredFieldIsNullException;
 import org.ucsccaa.homepagebe.exceptions.customizedExceptions.UserNotFoundException;
 import org.ucsccaa.homepagebe.repositories.MemberRepository;
@@ -27,19 +26,33 @@ public class MemberService {
     private SymmetricDataProtection symmetricDataProtection;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public Integer updateMember(Integer uid, Member member) {
+    public void updateMember(Integer uid, Member member) {
         if (member == null || uid == null) {
             throw new RequiredFieldIsNullException("Request field is NULL or empty: uid - " + uid + ", Member - " + member);
         }
         Member member1;
-        if (!memberRepository.findById(uid).isPresent()) {
+        if (!memberRepository.existsById(uid)) {
             throw new UserNotFoundException("No Such Member");
         }
+
         member1 = memberRepository.findById(uid).get();
         member = symmetricDataProtection.decrypt(member);
+
+        if (member.getEmail() != null || member.getUid() != null) {
+            User user = userRepository.findById(member1.getEmail()).get();
+            if (member.getEmail() != null) {
+                user.setEmail(member.getEmail());
+            }
+            if (member.getUid() != null) {
+                user.setUid(member.getUid());
+            }
+            userRepository.save(user);
+        }
+
         for (Field field : member.getClass().getDeclaredFields()) {
             field.setAccessible(true);
             Object fieldValue;
+
             try {
                 fieldValue = field.get(member);
             } catch (Exception e) {
@@ -57,7 +70,6 @@ public class MemberService {
                             throw new RuntimeException(e);
                         }
                         if(field1Value != null) {
-                            //Object value = field1Value.getClass().equals(String.class) ? symmetricDataProtection.decrypt(field1Value.toString()) : field1Value;
                             try {
                                 field1.set(member1, field1Value);
                             } catch (Exception e) {
@@ -68,7 +80,6 @@ public class MemberService {
                         field1.setAccessible(false);
                     }
                 } else {
-                    //Object value = fieldValue.getClass().equals(String.class) ? symmetricDataProtection.decrypt(fieldValue.toString()) : fieldValue;
                     try {
                         field.set(member1, fieldValue);
                     } catch (Exception e) {
@@ -78,11 +89,23 @@ public class MemberService {
             }
             field.setAccessible(false);
         }
+        member1.setStatus(Member.Status.PENDING);
         logger.info("Updated member： uid - {}", uid);
-        return memberRepository.save(member1).getMemberId();
+        memberRepository.save(member1);
     }
 
     public static <T> boolean isJDKClass(T t) {
         return t.getClass().getPackage().getName().startsWith("java");
+    }
+
+    public void updateEntireMember(Integer uid, Member member) {
+        if (member == null || uid == null) {
+            throw new RequiredFieldIsNullException("Request field is NULL or empty: uid - " + uid + ", Member - " + member);
+        }
+        if (!memberRepository.existsById(uid)) {
+            throw new UserNotFoundException("No Such Member");
+        }
+        logger.info("Updated member： uid - {}", uid);
+        memberRepository.save(member);
     }
 }
