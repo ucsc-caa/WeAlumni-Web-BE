@@ -1,12 +1,5 @@
 package org.ucsccaa.homepagebe.controllers;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.security.Provider;
-import java.util.Optional;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +7,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.ucsccaa.homepagebe.domains.Member;
-import org.ucsccaa.homepagebe.exceptions.ExceptionHandler;
+import org.ucsccaa.homepagebe.exceptions.GenericServiceException;
 import org.ucsccaa.homepagebe.models.GeneralResponse;
 import org.ucsccaa.homepagebe.services.MemberService;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Api()
 @RestController
 @RequestMapping("/member")
 public class MemberController {
@@ -30,27 +21,29 @@ public class MemberController {
     private MemberService memberService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @ApiOperation("Update existed Member")
+    @ApiOperation("Update Member info by uid")
     @PutMapping("/{uid}")
     public ResponseEntity<GeneralResponse> updateMember(@PathVariable("uid") Integer uid, @RequestBody Member member) {
         try {
             memberService.updateMember(uid, member);
-            return new ResponseEntity<>(new GeneralResponse(200, "Success", null), HttpStatus.OK);
-        } catch (Exception e) {
-            logger.error("Update user failed: e - {}", e.getMessage());
-            return ExceptionHandler.BAD_REQUEST.setMessage(e.getMessage()).getResponseEntity();
+            logger.info("Update Member info: uid-{}, memberId-{}, memberName-{}", uid, member.getMemberId(), member.getName());
+            return new ResponseEntity<>(new GeneralResponse<>(), HttpStatus.OK);
+        } catch (GenericServiceException e) {
+            logger.error("Update Member info failed: e - {}", e.getMessage());
+            return e.getExceptionHandler().getResponseEntity();
         }
     }
 
-    @ApiOperation("Update existed Member")
+    @ApiOperation("Submit Member info for review")
     @PostMapping("/{uid}")
     public ResponseEntity<GeneralResponse> updateEntireMember(@PathVariable("uid") Integer uid, @RequestBody Member member) {
         try {
-            memberService.updateEntireMember(uid, member);
-            return new ResponseEntity<>(new GeneralResponse(200, "Success", null), HttpStatus.OK);
-        } catch (Exception e) {
-            logger.error("Update user failed: e - {}", e.getMessage());
-            return ExceptionHandler.BAD_REQUEST.setMessage(e.getMessage()).getResponseEntity();
+            memberService.submitMemberForReview(uid, member);
+            logger.info("Submit Member info for review: uid-{}, memberId-{}, memberName-{}", uid, member.getMemberId(), member.getName());
+            return new ResponseEntity<>(new GeneralResponse<>(), HttpStatus.OK);
+        } catch (GenericServiceException e) {
+            logger.error("Submit Member info failed: e - {}", e.getMessage());
+            return e.getExceptionHandler().getResponseEntity();
         }
     }
 }

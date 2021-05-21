@@ -32,6 +32,10 @@ public class UserController {
         } catch (GenericServiceException e) {
             logger.error("Register new user failed: e - {}", e.getMessage());
             return e.getExceptionHandler().getResponseEntity();
+        } catch (Exception e) {
+            logger.error("Register new user failed: e - {}", e.getMessage());
+            e.printStackTrace();
+            return ExceptionHandler.SERVER_ERROR.getResponseEntity();
         }
     }
 

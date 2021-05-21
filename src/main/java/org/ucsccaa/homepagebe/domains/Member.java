@@ -18,7 +18,6 @@ public class Member {
     @Column(unique = true)
     private Integer memberId;
     @Enumerated(EnumType.STRING)
-    @Column(insertable = false, updatable = false)
     private Status status;
     private String name;
     private Boolean gender;
@@ -73,7 +72,7 @@ public class Member {
     @NoArgsConstructor
     @Encryptable
     public static class Career {
-        private Boolean status;
+        private Boolean state;
         private String company;
         private String position;
     }
