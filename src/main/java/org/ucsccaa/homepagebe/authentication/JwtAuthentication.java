@@ -11,7 +11,6 @@ import org.ucsccaa.homepagebe.domains.User;
 import org.ucsccaa.homepagebe.exceptions.customizedExceptions.*;
 import org.ucsccaa.homepagebe.repositories.UserAccessRepository;
 import org.ucsccaa.homepagebe.repositories.UserRepository;
-import org.ucsccaa.homepagebe.services.DataProtection;
 import org.ucsccaa.homepagebe.utils.AppConstants;
 
 import java.sql.Timestamp;
@@ -32,8 +31,6 @@ public class JwtAuthentication implements Authentication {
     private UserRepository userRepository;
     @Autowired
     private UserAccessRepository userAccessRepository;
-    @Autowired
-    private DataProtection dataProtection;
 
     @Override
     public String generateToken(String identifier, String password) {
@@ -57,7 +54,7 @@ public class JwtAuthentication implements Authentication {
     }
 
     private boolean verifyUserPassword(String savedPassword, String givenPassword) {
-        return dataProtection.decrypt(savedPassword).equals(givenPassword);
+        return savedPassword.equals(givenPassword);
     }
 
     @Override

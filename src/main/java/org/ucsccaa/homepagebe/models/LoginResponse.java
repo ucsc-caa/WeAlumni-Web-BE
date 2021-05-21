@@ -1,8 +1,9 @@
-package org.ucsccaa.homepagebe.domains;
+package org.ucsccaa.homepagebe.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ucsccaa.homepagebe.domains.Member;
 import org.ucsccaa.homepagebe.utils.Encryptable;
 
 @Data
@@ -17,7 +18,7 @@ public class LoginResponse {
     @AllArgsConstructor
     @NoArgsConstructor
     @Encryptable
-    public class BasicInfo {
+    public static class BasicInfo {
         private Integer uid;
         private Integer memberId;
         private String name;

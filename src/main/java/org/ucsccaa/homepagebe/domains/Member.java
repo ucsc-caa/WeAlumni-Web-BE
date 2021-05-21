@@ -7,8 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ucsccaa.homepagebe.utils.Encryptable;
 
-import java.time.LocalDate;
-
 @Entity
 @Data
 @AllArgsConstructor
@@ -20,11 +18,10 @@ public class Member {
     @Column(unique = true)
     private Integer memberId;
     @Enumerated(EnumType.STRING)
-    @Column(insertable = false, updatable = false)
     private Status status;
     private String name;
     private Boolean gender;
-    private LocalDate birthday;
+    private String birthday;
     private String email;
     private String phone;
     private String wechat;
@@ -75,7 +72,7 @@ public class Member {
     @NoArgsConstructor
     @Encryptable
     public static class Career {
-        private Boolean status;
+        private Boolean state;
         private String company;
         private String position;
     }

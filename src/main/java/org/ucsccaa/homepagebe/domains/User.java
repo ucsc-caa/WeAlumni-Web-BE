@@ -17,8 +17,7 @@ public class User {
     @Column(unique = true)
     private String email;
     private String password;
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable=false, insertable = false, updatable = false, columnDefinition="int not null UNIQUE key auto_increment")
+    @Column(unique = true, nullable = false)
     private Integer uid;
     private Boolean emailVerified;
 }

@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.ucsccaa.homepagebe.authentication.Authentication;
-import org.ucsccaa.homepagebe.domains.LoginResponse;
+import org.ucsccaa.homepagebe.models.LoginResponse;
 import org.ucsccaa.homepagebe.exceptions.GenericServiceException;
 import org.ucsccaa.homepagebe.models.GeneralResponse;
 import org.ucsccaa.homepagebe.services.UserService;
@@ -28,8 +28,8 @@ public class AuthenticationController {
             String token = authentication.generateToken(email, password);
             logger.info("Succeed to generate token: email - {}", email);
 
-            LoginResponse loginResponse = userService.getLoginInfoByEmail(email);
-            loginResponse.setToken(token);
+            LoginResponse.BasicInfo basicInfo = userService.getBasicInfoByEmail(email);
+            LoginResponse loginResponse = new LoginResponse(token, basicInfo);
             return new ResponseEntity<>(new GeneralResponse<>(loginResponse), HttpStatus.OK);
         } catch (GenericServiceException e) {
             logger.warn("Failed to generate token: e - {}", e.getMessage());
