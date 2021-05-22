@@ -21,9 +21,19 @@ public class MemberController {
     private MemberService memberService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @ApiOperation("Get user's membership info by UID")
+    @GetMapping("/{uid}")
+    public ResponseEntity<GeneralResponse> getMemberInfoByUID(@PathVariable Integer uid) {
+        try {
+            return new ResponseEntity<>(new GeneralResponse<>(memberService.getMemberInfo(uid)), HttpStatus.OK);
+        } catch (GenericServiceException e) {
+            return e.getExceptionHandler().getResponseEntity();
+        }
+    }
+
     @ApiOperation("Update Member info by uid")
     @PutMapping("/{uid}")
-    public ResponseEntity<GeneralResponse> updateMember(@PathVariable("uid") Integer uid, @RequestBody Member member) {
+    public ResponseEntity<GeneralResponse> updateMemberInfo(@PathVariable("uid") Integer uid, @RequestBody Member member) {
         try {
             memberService.updateMember(uid, member);
             logger.info("Update Member info: uid-{}, memberId-{}, memberName-{}", uid, member.getMemberId(), member.getName());
@@ -36,7 +46,7 @@ public class MemberController {
 
     @ApiOperation("Submit Member info for review")
     @PostMapping("/{uid}")
-    public ResponseEntity<GeneralResponse> updateEntireMember(@PathVariable("uid") Integer uid, @RequestBody Member member) {
+    public ResponseEntity<GeneralResponse> submitMemberInfoForReview(@PathVariable("uid") Integer uid, @RequestBody Member member) {
         try {
             memberService.submitMemberForReview(uid, member);
             logger.info("Submit Member info for review: uid-{}, memberId-{}, memberName-{}", uid, member.getMemberId(), member.getName());
