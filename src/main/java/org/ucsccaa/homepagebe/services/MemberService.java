@@ -22,7 +22,7 @@ public class MemberService {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
-    private SymmetricDataProtection symmetricDataProtection;
+    private DataProtection dataProtection;
 
     public void register(Integer uid, String email) {
         Member member = new Member();
@@ -46,7 +46,7 @@ public class MemberService {
 
         logger.debug("Start update Member: uid - " + uid);
         Member savedMember = memberRepository.getOne(uid);
-        member = symmetricDataProtection.decrypt(member);
+        member = dataProtection.decrypt(member);
 
         try {
             fillInDomain(savedMember, member);
@@ -79,6 +79,8 @@ public class MemberService {
     }
 
     public void submitMemberForReview(Integer uid, Member member) {
+        member = dataProtection.decrypt(member);
+
         if (member == null || uid == null) {
             throw new RequiredFieldIsNullException("Requested field is NULL: uid - " + uid);
         }
@@ -92,6 +94,8 @@ public class MemberService {
     }
 
     public Member getMemberInfo(Integer uid) {
-        return memberRepository.findById(uid).orElse(null);
+        Member member =  memberRepository.findById(uid).orElse(null);
+        if (member == null) throw new UserNotFoundException(uid.toString());
+        return dataProtection.encrypt(member);
     }
 }

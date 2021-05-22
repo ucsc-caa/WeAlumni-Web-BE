@@ -1,4 +1,4 @@
-package org.ucsccaa.homepagebe.filter;
+package org.ucsccaa.homepagebe.filter.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;

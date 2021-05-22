@@ -40,7 +40,6 @@ public class JwtAuthenticationTests {
         ReflectionTestUtils.setField(jwtAuthentication, "expirationInMinutes", 1L);
         when(userRepository.findById(eq(email))).thenReturn(Optional.of(user));
         when(userAccessRepository.isAdminAccess(eq(email))).thenReturn(true);
-        when(dataProtection.decrypt(eq(password))).thenReturn(password);
     }
 
     @Test

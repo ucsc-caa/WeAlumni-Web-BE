@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.ucsccaa.homepagebe.domains.Member;
 import org.ucsccaa.homepagebe.exceptions.ExceptionHandler;
 import org.ucsccaa.homepagebe.exceptions.GenericServiceException;
 import org.ucsccaa.homepagebe.models.GeneralResponse;
@@ -38,17 +37,4 @@ public class UserController {
             return ExceptionHandler.SERVER_ERROR.getResponseEntity();
         }
     }
-
-    @ApiOperation("Get user's membership info by UID")
-    @GetMapping("/{uid}")
-    public ResponseEntity<GeneralResponse> getUserById(@PathVariable Integer uid) {
-        try {
-            // TODO Get Member from MemberService
-            Member member = new Member();
-            return new ResponseEntity<>(new GeneralResponse<>(member), HttpStatus.OK);
-        } catch (Exception e) {
-            return ExceptionHandler.SERVER_ERROR.getResponseEntity();
-        }
-    }
-
 }
