@@ -1,5 +1,6 @@
 package org.ucsccaa.homepagebe.services;
 
+import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,9 @@ import org.ucsccaa.homepagebe.exceptions.customizedExceptions.UserExistException
 import org.ucsccaa.homepagebe.repositories.UserAccessRepository;
 import org.ucsccaa.homepagebe.repositories.UserRepository;
 
+import javax.mail.MessagingException;
 import javax.transaction.Transactional;
+import java.io.UnsupportedEncodingException;
 
 @Service
 public class UserService {
@@ -29,8 +32,14 @@ public class UserService {
     @Autowired
     private MemberService memberService;
 
+    // mail sender & verification code
+    @Autowired
+    private mailSenderHandler mailSenderHandler;
+    @Autowired
+    private verifyCodeService verifyCodeService;
+    private DataProtection dataProtection;
     @Transactional(rollbackOn = Exception.class)
-    public void register(String email, String password) {
+    public void register(String email, String password) throws UnsupportedEncodingException, MessagingException {
         if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password))
             throw new RequiredFieldIsNullException("Request field is NULL or empty: email - " + email + ", password - " + password);
 
@@ -45,6 +54,7 @@ public class UserService {
         memberService.register(user.getUid(), email);
 
         //TODO email service
+        mailSenderHandler.sendMail(email, "verify to register", "verify", user.getUid());
     }
 
     public LoginResponse.BasicInfo getBasicInfoByEmail(String email) {
@@ -60,5 +70,22 @@ public class UserService {
                         user.getEmail(),
                         member.getStatus(),
                         user.getEmailVerified());
+    }
+
+    public Boolean verifyRegister(String verificationCode) throws UnsupportedEncodingException, MessagingException {
+        String code = dataProtection.decrypt(verificationCode);
+        if (code == null) throw new RequiredFieldIsNullException("Request filed is Null or empty: verification code - " + code);
+        if (verifyCodeService.verificateCode(code) == true) {
+            return true;
+        } else {
+            int id_From_verificationCode = Integer.parseInt(code.substring(code.length() - 1));
+            User user = userRepository.findByUid(id_From_verificationCode).get();
+            if (user == null) {
+                throw new UserNotFoundException("User Not Found by the uid");
+            } else {
+                mailSenderHandler.sendMail(user.getEmail(), "verify to register", "verify/", user.getUid());
+            }
+            return false;
+        }
     }
 }

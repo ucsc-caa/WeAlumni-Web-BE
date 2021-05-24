@@ -12,6 +12,10 @@ import org.ucsccaa.homepagebe.models.GeneralResponse;
 import org.ucsccaa.homepagebe.services.UserService;
 
 import io.swagger.annotations.ApiOperation;
+import org.ucsccaa.homepagebe.services.mailSenderHandler;
+
+import javax.mail.MessagingException;
+import java.io.UnsupportedEncodingException;
 
 @RestController
 @RequestMapping("/user")
@@ -33,6 +37,24 @@ public class UserController {
             return e.getExceptionHandler().getResponseEntity();
         } catch (Exception e) {
             logger.error("Register new user failed: e - {}", e.getMessage());
+            e.printStackTrace();
+            return ExceptionHandler.SERVER_ERROR.getResponseEntity();
+        }
+    }
+
+    @GetMapping("/verify/{verification_code}")
+    public ResponseEntity<GeneralResponse> verify(@PathVariable("verification_code") String verificationCode) throws UnsupportedEncodingException, MessagingException {
+        try {
+            boolean result = userService.verifyRegister(verificationCode);
+            if (result == true) {
+                return new ResponseEntity<>(new GeneralResponse(2101, "User is verified thru email", null), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(new GeneralResponse(2101, "User verified failed", result), HttpStatus.OK);
+            }
+        } catch (GenericServiceException e) {
+            logger.error("Verified failed: e - {}", e.getMessage());
+            return e.getExceptionHandler().getResponseEntity();
+        } catch (Exception e) {
             e.printStackTrace();
             return ExceptionHandler.SERVER_ERROR.getResponseEntity();
         }
