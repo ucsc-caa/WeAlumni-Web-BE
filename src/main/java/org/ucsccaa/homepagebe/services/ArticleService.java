@@ -70,7 +70,7 @@ public class ArticleService {
             throw new BadResourceException("empty article");
         if (article.getId() == null)
             throw new BadResourceException("bad id: empty or null");
-        if (articleRepository.existsById(article.getId()))
+        if (!articleRepository.existsById(article.getId()))
             throw new BadResourceException("no resource in id - " + article.getId());
         if (!StringUtils.isEmpty(article.getCategory()) && !categories.contains(article.getCategory()))
             categories.add(article.getCategory());
