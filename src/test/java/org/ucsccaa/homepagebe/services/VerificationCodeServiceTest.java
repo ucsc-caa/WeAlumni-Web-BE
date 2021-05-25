@@ -6,16 +6,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.ucsccaa.homepagebe.services.impl.verifyCodeServiceImpl;
+import org.ucsccaa.homepagebe.services.impl.SimpleVerificationCodeServiceImpl;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @RunWith(MockitoJUnitRunner.class)
-public class verifyCodeServiceTest {
+public class VerificationCodeServiceTest {
 
     @InjectMocks
-    verifyCodeServiceImpl verifyCodeService;
+    SimpleVerificationCodeServiceImpl verifyCodeService;
     @InjectMocks
     String expectedVerificationCode;
 
