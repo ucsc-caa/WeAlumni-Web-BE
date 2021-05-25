@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @WebFilter(urlPatterns = "/articles/*")
-public class ArticleAuthFilter extends AbstractAuthFilter {
+public class ArticleAuthenticationFilter extends AbstractAuthenticationFilter {
 
     @Override
     protected boolean filterable(HttpServletRequest request, HttpServletResponse response) {

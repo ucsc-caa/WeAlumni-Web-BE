@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Service
-public abstract class AbstractAuthFilter implements Filter {
+public abstract class AbstractAuthenticationFilter implements Filter {
     protected abstract boolean filterable(HttpServletRequest request, HttpServletResponse response);
 
     @Autowired
