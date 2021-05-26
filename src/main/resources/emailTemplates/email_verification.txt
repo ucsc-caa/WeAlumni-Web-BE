@@ -1,0 +1,39 @@
+<html>
+<head>
+	<title></title>
+	<link href="https://svc.webspellchecker.net/spellcheck31/lf/scayt3/ckscayt/css/wsc.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<pre>
+尊敬的 <strong>{RECEIVER_NAME}</strong>， 您好！
+
+感谢您注册UCSC-中国校友会，欢迎您加入校友会大家庭！
+
+请点击该链接验证您的邮箱，完成注册流程：
+http://<strong>{VERIFICATION_CODE}</strong>
+
+此链接有效期为：<strong>{HOUR}</strong>小时
+
+此致，
+会员管理中心
+​UCSC-中国校友会
+
+
+
+Dear <strong>{RECEIVER_NAME}</strong>,
+
+We&#39;re glad to see you here! Welcome to our alumni community!
+
+Please click the link below to verify your email:
+http://<strong>{VERIFICATION_CODE}</strong>
+
+
+This link will be expired in <strong>{HOUR}</strong> hour(s)
+
+
+Sincerely,
+Membership Center
+UCSC-Chinese Alumni Association
+</pre>
+</body>
+</html>

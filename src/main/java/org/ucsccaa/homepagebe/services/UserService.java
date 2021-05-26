@@ -3,6 +3,7 @@ package org.ucsccaa.homepagebe.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.ucsccaa.homepagebe.domains.Member;
@@ -15,6 +16,7 @@ import org.ucsccaa.homepagebe.exceptions.customizedExceptions.RequiredFieldIsNul
 import org.ucsccaa.homepagebe.exceptions.customizedExceptions.UserExistException;
 import org.ucsccaa.homepagebe.repositories.UserAccessRepository;
 import org.ucsccaa.homepagebe.repositories.UserRepository;
+import org.ucsccaa.homepagebe.utils.EmailTemplateType;
 
 import javax.transaction.Transactional;
 import java.util.Optional;
@@ -35,6 +37,9 @@ public class UserService {
     @Autowired
     private VerificationCodeService verificationCodeService;
 
+    @Value("${email.sender.public}")
+    private String publicSender;
+
     @Transactional(rollbackOn = Exception.class)
     public void register(String email, String password) {
         if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password))
@@ -50,7 +55,7 @@ public class UserService {
         userAccessRepository.save(new UserAccess(email, false));
         memberService.register(user.getUid(), email);
 
-        sendRegistrationEmail(email, user.getUid());
+        sendRegistrationEmail(user.getUid());
     }
 
     public LoginResponse.BasicInfo getBasicInfoByEmail(String email) {
@@ -84,9 +89,21 @@ public class UserService {
         }
     }
 
-    public void sendRegistrationEmail(String receiver, Integer uid) {
-        EmailTemplate registrationEmail = new EmailTemplate();
-        registrationEmail.setSender();
+    public void sendRegistrationEmail(Integer uid) {
+        Optional<User> optionalUser = userRepository.findByUid(uid);
+        if (!optionalUser.isPresent())
+            throw new UserNotFoundException(String.valueOf(uid));
+        User user = optionalUser.get();
+        Member member = memberService.getMemberInfo(user.getUid());
+
+        EmailTemplate registrationEmail = new EmailTemplate(EmailTemplateType.EMAIL_VERIFICATION);
+        registrationEmail.setSender(publicSender);
+        registrationEmail.setSenderName("CAA Membership Center");
+        registrationEmail.setReceiver(user.getEmail());
+        registrationEmail.setReceiverName(member.getName() == null ? "新会员" : member.getName());
+        registrationEmail.setSubject("[UCSC-CAA] 中国校友会-普通会员注册邮箱确认");
+        registrationEmail.addPlaceholder("{VERIFICATION_CODE}", verificationCodeService.generateVerificationCode(uid));
+        registrationEmail.addPlaceholder("{HOUR}", "1");
         emailService.sendMail(registrationEmail);
     }
 }

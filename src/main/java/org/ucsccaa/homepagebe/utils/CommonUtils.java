@@ -15,4 +15,12 @@ public class CommonUtils {
     public static String getCurrentDate() {
         return LocalDate.now().format(dateFormatter);
     }
+
+    public static String boxingURLEncodingChar(String str) {
+        return str.replace('/', '*');
+    }
+
+    public static String unboxingURLEncodingChar(String str) {
+        return str.replace('*', '/');
+    }
 }

@@ -5,56 +5,39 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.ucsccaa.homepagebe.services.impl.SimpleVerificationCodeServiceImpl;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VerificationCodeServiceTest {
 
+    @Mock
+    private DataProtection dataProtection;
     @InjectMocks
-    SimpleVerificationCodeServiceImpl verifyCodeService;
-    @InjectMocks
-    String expectedVerificationCode;
+    private SimpleVerificationCodeServiceImpl verifyCodeService;
+
+    private final Integer expectedUid = 1;
+    private final String expectedVerificationCode = LocalDateTime.now().plusMinutes(5) + "|" + expectedUid;
 
     @Before
-    public void configuration() {
-        LocalDateTime currentTime = LocalDateTime.now();
-        currentTime = currentTime.plusDays(1);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        expectedVerificationCode = currentTime.format(formatter) + "|" + 1;
+    public void configure() {
+         when(dataProtection.encrypt(anyString())).thenReturn(expectedVerificationCode);
+         when(dataProtection.decrypt(anyString())).thenReturn(expectedVerificationCode);
     }
 
     @Test
     public void testCreateVerificationCode() {
-        String actualVerificationCode = verifyCodeService.createVerificationCode(1);
+        String actualVerificationCode = verifyCodeService.generateVerificationCode(1);
         Assert.assertEquals(expectedVerificationCode, actualVerificationCode);
     }
 
     @Test
-    public void testFormatTime() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime actualFormattedTime = verifyCodeService.formatTime(now);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        String timeStr = now.format(formatter);
-        LocalDateTime expectedFormattedTime = LocalDateTime.parse(timeStr, formatter);
-        Assert.assertEquals(expectedFormattedTime, actualFormattedTime);
-    }
-
-    @Test
-    public void testFormatTimeInStr() {
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        String expectedTimeStr = now.format(formatter);
-        String actualTimeStr = verifyCodeService.formatTimeInStr(now);
-        Assert.assertEquals(expectedTimeStr, actualTimeStr);
-    }
-
-    @Test
-    public void testVerificateCode() {
-        boolean result = verifyCodeService.verificateCode(expectedVerificationCode);
-        Assert.assertTrue(result);
+    public void testVerificationCode() {
+        Integer uid = verifyCodeService.getUid(expectedVerificationCode);
+        Assert.assertEquals(expectedUid, uid);
     }
 }

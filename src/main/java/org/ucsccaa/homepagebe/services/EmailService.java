@@ -16,6 +16,7 @@ public class EmailService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @Autowired
     private JavaMailSender mailSender;
 
     public void sendMail(EmailTemplate emailTemplate) {

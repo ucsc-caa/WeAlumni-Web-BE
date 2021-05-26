@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.ucsccaa.homepagebe.exceptions.customizedExceptions.VerificationCodeExpiredException;
 import org.ucsccaa.homepagebe.services.DataProtection;
 import org.ucsccaa.homepagebe.services.VerificationCodeService;
+import org.ucsccaa.homepagebe.utils.CommonUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -18,11 +19,13 @@ public class SimpleVerificationCodeServiceImpl implements VerificationCodeServic
     @Override
     public String generateVerificationCode(Integer uid) {
         LocalDateTime currentTime = LocalDateTime.now().plusDays(1);
-        return dataProtection.encrypt(currentTime + "|" + uid);
+        String code = dataProtection.encrypt(currentTime + "|" + uid);
+        return CommonUtils.boxingURLEncodingChar(code);
     }
 
     @Override
     public Integer getUid(String verificationCode) {
+        verificationCode = CommonUtils.unboxingURLEncodingChar(verificationCode);
         verificationCode = dataProtection.decrypt(verificationCode);
         Integer uid = null;
 
@@ -32,7 +35,7 @@ public class SimpleVerificationCodeServiceImpl implements VerificationCodeServic
 
             uid = Integer.parseInt(verificationCode.substring(delimiterPosition + 1));
             LocalDateTime timestamp = LocalDateTime.parse(verificationCode.substring(0, delimiterPosition));
-            if (timestamp.isAfter(LocalDateTime.now())) throw new RuntimeException();
+            if (timestamp.isBefore(LocalDateTime.now())) throw new RuntimeException();
         } catch (DateTimeParseException e) {
             throw new VerificationCodeExpiredException("INVALID: broken timestamp");
         } catch (NumberFormatException e) {
