@@ -84,6 +84,7 @@ public class JwtAuthentication implements Authentication {
     @Override
     public <T> T getValue(String token, String key, Class<T> requiredType) {
         try {
+            token = token.replace("Bearer ", "");
             Claims claims = Jwts.parser().setSigningKey(signingKey).parseClaimsJws(token).getBody();
             return claims.get(key, requiredType);
         } catch (Exception e) {

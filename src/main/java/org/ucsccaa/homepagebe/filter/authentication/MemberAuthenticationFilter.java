@@ -4,12 +4,11 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebFilter(urlPatterns = "/article/*")
-public class ArticleAuthenticationFilter extends AbstractAuthenticationFilter {
+@WebFilter(urlPatterns = "/member/*")
+public class MemberAuthenticationFilter extends AbstractAuthenticationFilter {
 
     @Override
     protected boolean filterable(HttpServletRequest request, HttpServletResponse response) {
-        String method = request.getMethod();
-        return !"GET".equals(method);
+        return false;
     }
 }
