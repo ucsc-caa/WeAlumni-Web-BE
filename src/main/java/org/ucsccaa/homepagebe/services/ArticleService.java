@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 import org.ucsccaa.homepagebe.domains.Article;
 import org.ucsccaa.homepagebe.exceptions.customizedExceptions.BadRequestException;
 import org.ucsccaa.homepagebe.exceptions.customizedExceptions.BadResourceException;
+import org.ucsccaa.homepagebe.exceptions.customizedExceptions.ResourceDeletedException;
 import org.ucsccaa.homepagebe.repositories.ArticlePagingRepository;
 import org.ucsccaa.homepagebe.repositories.ArticleRepository;
 import org.ucsccaa.homepagebe.utils.CommonUtils;
@@ -83,6 +84,9 @@ public class ArticleService {
     public void deleteArticleById(Integer id) {
         if (id == null)
             throw new BadRequestException("Param id cannot be null");
+        if (!articleRepository.existsById(id)) {
+            throw new ResourceDeletedException(String.valueOf(id));
+        }
         articleRepository.deleteById(id);
     }
 }
