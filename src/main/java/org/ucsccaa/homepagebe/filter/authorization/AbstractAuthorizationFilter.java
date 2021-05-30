@@ -1,6 +1,8 @@
 package org.ucsccaa.homepagebe.filter.authorization;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.ucsccaa.homepagebe.authentication.Authentication;
@@ -17,6 +19,7 @@ public abstract class AbstractAuthorizationFilter implements Filter {
 
     protected abstract boolean filterable(HttpServletRequest request, HttpServletResponse response);
     protected abstract void verify(HttpServletRequest request, HttpServletResponse response);
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     protected Authentication authentication;
@@ -34,12 +37,14 @@ public abstract class AbstractAuthorizationFilter implements Filter {
             httpServletResponse.setStatus(exceptionHandler.getStatusCodeValue());
             httpServletResponse.setContentType("application/json");
             response.getOutputStream().write(new ObjectMapper().writeValueAsBytes(exceptionHandler.getResponseEntity().getBody()));
+            logger.error("Failed in AuthorizationFilter: url - {}, errorMsg - {}", httpServletRequest.getRequestURL().toString(), e.getExceptionHandler().getMessage());
             return;
         } catch (Exception e) {
             ExceptionHandler exceptionHandler = ExceptionHandler.SERVER_ERROR.setMessage(e.getMessage());
             httpServletResponse.setStatus(exceptionHandler.getStatusCodeValue());
             httpServletResponse.setContentType("application/json");
             response.getOutputStream().write(new ObjectMapper().writeValueAsBytes(exceptionHandler.getResponseEntity().getBody()));
+            logger.error("Failed in AuthorizationFilter: url - {}, errorMsg - {}", httpServletRequest.getRequestURL().toString(), e.getMessage());
             return;
         }
         chain.doFilter(request, response);
