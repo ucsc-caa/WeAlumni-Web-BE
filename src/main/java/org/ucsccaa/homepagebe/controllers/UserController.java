@@ -37,4 +37,24 @@ public class UserController {
             return ExceptionHandler.SERVER_ERROR.getResponseEntity();
         }
     }
+    @ApiOperation("Verify the email address by the verification code")
+    @GetMapping("/verify/{verificationCode}")
+    public ResponseEntity<GeneralResponse> verify(@PathVariable String verificationCode) {
+        try {
+            userService.verifyRegistrationEmail(verificationCode);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (GenericServiceException e) {
+            logger.error("Email registration verification failed: e - {}", e.getMessage());
+            return e.getExceptionHandler().getResponseEntity();
+        } catch (Exception e) {
+            logger.error("Email registration verification failed: e - {}", e.getMessage());
+            return ExceptionHandler.SERVER_ERROR.getResponseEntity();
+        }
+    }
+
+    @ApiOperation("Send out email verification email to specific user")
+    @PostMapping("/verify/send/{uid}")
+    public void sendEmailVerificationEmail(@PathVariable Integer uid) {
+        userService.sendRegistrationEmail(uid);
+    }
 }
