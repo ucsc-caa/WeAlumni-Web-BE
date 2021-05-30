@@ -9,6 +9,6 @@ public class MemberAuthenticationFilter extends AbstractAuthenticationFilter {
 
     @Override
     protected boolean filterable(HttpServletRequest request, HttpServletResponse response) {
-        return false;
+        return true;
     }
 }

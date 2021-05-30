@@ -19,7 +19,6 @@ public class ArticleAuthorizationFilter extends AbstractAuthorizationFilter {
         }
         String token = request.getHeader("authorization");
         return !authentication.getValue(token, "isAdmin", Boolean.class);
-
     }
 
     @Override

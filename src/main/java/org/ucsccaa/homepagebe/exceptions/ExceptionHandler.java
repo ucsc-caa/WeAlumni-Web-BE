@@ -36,6 +36,10 @@ public enum ExceptionHandler {
         return this;
     }
 
+    public String getMessage() {
+        return this.message;
+    }
+
     public Integer getStatusCodeValue() {
         return this.httpStatusCode.value();
     }
