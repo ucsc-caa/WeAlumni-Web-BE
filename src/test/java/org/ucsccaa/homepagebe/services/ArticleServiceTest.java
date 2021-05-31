@@ -14,9 +14,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.*;
 import org.ucsccaa.homepagebe.domains.Article;
+import org.ucsccaa.homepagebe.exceptions.customizedExceptions.BadRequestException;
+import org.ucsccaa.homepagebe.exceptions.customizedExceptions.ResourceDeletedException;
 import org.ucsccaa.homepagebe.repositories.ArticlePagingRepository;
 import org.ucsccaa.homepagebe.repositories.ArticleRepository;
 
@@ -117,10 +120,17 @@ public class ArticleServiceTest {
 
     @Test
     public void deleteArticleByIdTest() {
+        Mockito.when(articleRepository.existsById(Mockito.anyInt())).thenReturn(true);
         service.deleteArticleById(expectedArticle.getId());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ResourceDeletedException.class)
+    public void deleteArticleByNotExistsIdTest() {
+        Mockito.when(articleRepository.existsById(Mockito.anyInt())).thenReturn(false);
+        service.deleteArticleById(expectedArticle.getId());
+    }
+
+    @Test(expected = BadRequestException.class)
     public void deleteArticleByIdNullTest() {
         service.deleteArticleById(null);
     }
