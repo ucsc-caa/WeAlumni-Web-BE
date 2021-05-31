@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>org.ucsccaa</groupId>
 	<artifactId>homepage-be</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-RELEASE</version>
 	<name>homepage-be</name>
 	<description>UCSC-CAA Homepage Content Management System</description>
 
