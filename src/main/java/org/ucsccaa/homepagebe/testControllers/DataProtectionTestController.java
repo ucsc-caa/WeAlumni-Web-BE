@@ -45,7 +45,7 @@ public class DataProtectionTestController {
         }
     }
 
-    @GetMapping("/encrypt")
+    @PostMapping("/encrypt")
     public <T> ResponseEntity encryptObject(@RequestBody T plain, @RequestParam String classType) {
         try {
             Class<?> type = Class.forName(classType);
@@ -66,7 +66,7 @@ public class DataProtectionTestController {
         }
     }
 
-    @GetMapping("/decrypt")
+    @PostMapping("/decrypt")
     public <T> ResponseEntity decryptObject(@RequestBody T cipher, @RequestParam String classType) {
         try {
             Class<?> type = Class.forName(classType);
