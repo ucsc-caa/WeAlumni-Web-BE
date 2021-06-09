@@ -26,14 +26,14 @@ public class SymmetricDataProtectionTests {
             1, 1, Member.Status.PENDING, "Sammy Slug", true, "2020-01-01", "caa@ucsc.edu", "8310000000", "wechat", 1,
             new Member.Address("1156 High Street", "Santa Cruz", "US", "95064"),
             new Member.Degree("1234567", "Bachelor", 2020, "CS", "MATH", "TIM"),
-            new Member.Career(true, "UCSC", "Student"),
+            new Member.Career("working", "UCSC", "Student"),
             true);
 
     private final Member member_cipher = new Member(
             1, 1, Member.Status.PENDING, "rHT9++CT++KD7aLXhaDDmQ==", true, "TDwgfXccWXIRiDRyDvn/rg==", "7Njxp5tHQarD0VwTQMhsyA==", "YCXNC5+SGii1RmzyvLa/0w==", "ZYnwxFSfOtmUJjigXDXf/g==", 1,
             new Member.Address("cDmUx2XfF7tPdTB68/zJ03zI1M+YPUhdYCTeGH4Hl04=", "mKsENmU3rHDWX+eBbZakCw==", "7trGa0aZvkdIGlfy9nBBug==", "xRkg4nuZH4qZTBeJ/hkCpw=="),
             new Member.Degree("yxMATU9KJbepryM7FZ6Thg==", "8n2er2k4vWQrFyuAGjdCig==", 2020, "NofQ+u8GDDSbUgaaJ9Qygw==", "DHTUXVxtNH2PyB7zElE/jw==", "1HU0CtqtyFJrikgKPhxGYw=="),
-            new Member.Career(true, "YKI/eXc2gaJZspNhGXIsOg==", "LjnLXIveZYEstSepckvZMQ=="),
+            new Member.Career("Xen6oyZaB2cEqR3mrYGU8Q==", "YKI/eXc2gaJZspNhGXIsOg==", "LjnLXIveZYEstSepckvZMQ=="),
             true);
 
     @Before

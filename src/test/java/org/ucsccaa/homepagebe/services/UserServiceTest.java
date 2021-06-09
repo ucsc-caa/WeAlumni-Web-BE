@@ -34,7 +34,7 @@ public class UserServiceTest {
 
     private final Member.Address address = new Member.Address("street", "city", "country", "postal");
     private final Member.Degree degree = new Member.Degree("studentId", "program", 2021, "major1", "major2", "minor");
-    private final Member.Career career = new Member.Career(true, "company", "position");
+    private final Member.Career career = new Member.Career("就业", "company", "position");
     private final Member.Status status = Member.Status.PENDING;
     private final Member expectedMember = new Member(1, 1, status, "name", true, "LocalDate.now()", "email", "phone", "wechat", 1, address, degree, career, true);
     private final User user = new User("email", "password", 1, false);
