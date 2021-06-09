@@ -72,7 +72,7 @@ public class Member {
     @NoArgsConstructor
     @Encryptable
     public static class Career {
-        private Boolean state;
+        private String state;
         private String company;
         private String position;
     }
