@@ -24,7 +24,7 @@ public class DataProtectionTestController {
     private DataProtection dataProtection;
 
     @GetMapping("/encrypt_string")
-    public String encryptString(@RequestParam String plain) {
+    public String encryptString(@RequestParam(required = false) String plain) {
         try {
             logger.info("Try to encrypt string: plain - {}", plain);
             return dataProtection.encrypt(plain);
@@ -35,7 +35,7 @@ public class DataProtectionTestController {
     }
 
     @GetMapping("/decrypt_string")
-    public String decryptString(@RequestParam String cipher) {
+    public String decryptString(@RequestParam(required = false) String cipher) {
         try {
             logger.info("Try to decrypt string: cipher - {}", cipher);
             return dataProtection.decrypt(cipher);
@@ -46,7 +46,9 @@ public class DataProtectionTestController {
     }
 
     @PostMapping("/encrypt")
-    public <T> ResponseEntity encryptObject(@RequestBody T plain, @RequestParam String classType) {
+    public <T> ResponseEntity encryptObject(@RequestBody(required = false) T plain, @RequestParam String classType) {
+        if (plain == null)
+            return null;
         try {
             Class<?> type = Class.forName(classType);
             ObjectMapper objectMapper = new ObjectMapper();
@@ -67,7 +69,9 @@ public class DataProtectionTestController {
     }
 
     @PostMapping("/decrypt")
-    public <T> ResponseEntity decryptObject(@RequestBody T cipher, @RequestParam String classType) {
+    public <T> ResponseEntity decryptObject(@RequestBody(required = false) T cipher, @RequestParam String classType) {
+        if (cipher == null)
+            return null;
         try {
             Class<?> type = Class.forName(classType);
             ObjectMapper objectMapper = new ObjectMapper();

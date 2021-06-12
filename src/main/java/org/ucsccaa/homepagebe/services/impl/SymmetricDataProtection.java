@@ -79,6 +79,8 @@ public class SymmetricDataProtection implements DataProtection {
 
     @Override
     public <T> T decrypt(T cipher) {
+        if (cipher == null)
+            return null;
         Field[] fields = cipher.getClass().getDeclaredFields();
         try {
             for (Field field : fields) {
